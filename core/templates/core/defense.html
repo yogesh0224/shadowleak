@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Defense Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+
+<h1>GuardShield Impact Analysis</h1>
+
+<canvas id="defenseChart" width="400" height="200"></canvas>
+
+<table border="1" cellpadding="10" style="margin-top:20px;">
+<tr>
+    <th>Experiment</th>
+    <th>Defense</th>
+    <th>Risk Score</th>
+</tr>
+
+{% for s in summaries %}
+<tr>
+    <td>{{ s.experiment.name }}</td>
+    <td>{{ s.experiment.use_guardshield }}</td>
+    <td>{{ s.overall_risk_score }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{{ labels|json_script:"labels" }}
+{{ risks|json_script:"risks" }}
+
+<script>
+const labels = JSON.parse(document.getElementById("labels").textContent);
+const risks = JSON.parse(document.getElementById("risks").textContent);
+
+new Chart(document.getElementById("defenseChart"), {
+    type: "bar",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "Risk Score",
+            data: risks
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

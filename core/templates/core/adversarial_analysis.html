@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adversarial Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+
+<h1>Adversarial Attack Analysis</h1>
+
+<!-- 🔥 Chart -->
+<canvas id="attackChart" width="400" height="200"></canvas>
+
+<!-- 🔥 Table -->
+<table border="1" cellpadding="10" style="margin-top:20px;">
+<tr>
+    <th>Strategy</th>
+    <th>Total Leaks</th>
+    <th>Avg Risk</th>
+</tr>
+
+{% for item in data %}
+<tr>
+    <td>{{ item.response__prompt__attack_strategy }}</td>
+    <td>{{ item.total_leaks }}</td>
+    <td>{{ item.avg_risk|floatformat:3 }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{{ labels|json_script:"labels" }}
+{{ counts|json_script:"counts" }}
+
+<script>
+const labels = JSON.parse(document.getElementById("labels").textContent);
+const counts = JSON.parse(document.getElementById("counts").textContent);
+
+new Chart(document.getElementById("attackChart"), {
+    type: "bar",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "Leak Count",
+            data: counts
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

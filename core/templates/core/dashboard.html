@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShadowLeak Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/dashboard.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <header class="hero">
+        <h1>ShadowLeak Dashboard</h1>
+        <p>Privacy Leakage Evaluation System</p>
+    </header>
+
+    {% if latest_experiment %}
+
+    <!-- ================= SUMMARY ================= -->
+    {% if summary %}
+    <section class="section">
+        <h2>Risk Summary</h2>
+
+        <div class="card-grid">
+            <div class="card metric">
+                <h3>Exposure Rate</h3>
+                <p>{{ summary.exposure_rate }}</p>
+            </div>
+
+            <div class="card metric">
+                <h3>Exact Leak</h3>
+                <p>{{ summary.exact_leak_rate }}</p>
+            </div>
+
+            <div class="card metric">
+                <h3>Partial Leak</h3>
+                <p>{{ summary.partial_leak_rate }}</p>
+            </div>
+
+            <div class="card metric">
+                <h3>Semantic Leak</h3>
+                <p>{{ summary.semantic_leak_rate }}</p>
+            </div>
+
+            <div class="card metric">
+                <h3>Overall Risk</h3>
+                <p>{{ summary.overall_risk_score }}</p>
+            </div>
+
+            <div class="card metric">
+                <h3>Risk Level</h3>
+                <p>{{ summary.risk_level }}</p>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- ================= CHARTS ================= -->
+    <section class="section charts">
+
+        <div class="chart-card">
+            <h2>Leakage by Field</h2>
+            <canvas id="fieldChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h2>Leakage by Type</h2>
+            <canvas id="typeChart"></canvas>
+        </div>
+
+        <!-- 🔥 NEW CHART -->
+        <div class="chart-card">
+            <h2>Leakage by Prompt Category</h2>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+    </section>
+
+    <!-- ================= TOP LEAKS ================= -->
+    <section class="section">
+        <h2>Top Risky Leaks</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Risk</th>
+                        <th>Matched</th>
+                        <th>Prompt</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for leak in top_leaks %}
+                    <tr>
+                        <td>{{ leak.field_name }}</td>
+                        <td>{{ leak.leakage_type }}</td>
+                        <td>{{ leak.leakage_risk }}</td>
+                        <td>{{ leak.matched_text }}</td>
+                        <td>{{ leak.response.prompt.final_prompt|truncatechars:60 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">No leaks found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {% endif %}
+
+</div>
+
+<!-- ================= JSON DATA (VERY IMPORTANT POSITION) ================= -->
+
+{{ field_labels|json_script:"field-labels" }}
+{{ field_counts|json_script:"field-counts" }}
+
+{{ type_labels|json_script:"type-labels" }}
+{{ type_counts|json_script:"type-counts" }}
+
+{{ category_labels|json_script:"category-labels" }}
+{{ category_counts|json_script:"category-counts" }}
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+// ---------- SAFE PARSER ----------
+function getData(id) {
+    const el = document.getElementById(id);
+    if (!el) return [];
+    try {
+        return JSON.parse(el.textContent);
+    } catch (e) {
+        console.log("Error parsing:", id);
+        return [];
+    }
+}
+
+// ---------- GET DATA ----------
+const fieldLabels = getData("field-labels");
+const fieldCounts = getData("field-counts");
+
+const typeLabels = getData("type-labels");
+const typeCounts = getData("type-counts");
+
+const categoryLabels = getData("category-labels");
+const categoryCounts = getData("category-counts");
+
+
+// ---------- FIELD CHART ----------
+if (document.getElementById("fieldChart")) {
+    new Chart(document.getElementById("fieldChart"), {
+        type: "bar",
+        data: {
+            labels: fieldLabels,
+            datasets: [{
+                label: "Leak Count",
+                data: fieldCounts
+            }]
+        }
+    });
+}
+
+
+// ---------- TYPE CHART ----------
+if (document.getElementById("typeChart")) {
+    new Chart(document.getElementById("typeChart"), {
+        type: "pie",
+        data: {
+            labels: typeLabels,
+            datasets: [{
+                data: typeCounts
+            }]
+        }
+    });
+}
+
+
+// ---------- CATEGORY CHART (🔥 NEW) ----------
+if (document.getElementById("categoryChart")) {
+    new Chart(document.getElementById("categoryChart"), {
+        type: "bar",
+        data: {
+            labels: categoryLabels,
+            datasets: [{
+                label: "Leak Count",
+                data: categoryCounts
+            }]
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>

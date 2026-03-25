@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Model Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+
+<h1>Model Risk Comparison</h1>
+
+<canvas id="comparisonChart" width="400" height="200"></canvas>
+
+<table border="1" cellpadding="10" style="margin-top: 20px;">
+    <tr>
+        <th>Model</th>
+        <th>Risk Score</th>
+        <th>Exposure Rate</th>
+    </tr>
+    {% for s in summaries %}
+    <tr>
+        <td>{{ s.experiment.model_name }}</td>
+        <td>{{ s.overall_risk_score }}</td>
+        <td>{{ s.exposure_rate }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{{ model_names|json_script:"models" }}
+{{ risk_scores|json_script:"scores" }}
+
+<script>
+const models = JSON.parse(document.getElementById("models").textContent);
+const scores = JSON.parse(document.getElementById("scores").textContent);
+
+new Chart(document.getElementById("comparisonChart"), {
+    type: "bar",
+    data: {
+        labels: models,
+        datasets: [{
+            label: "Risk Score",
+            data: scores
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ML vs Rule Comparison</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f5f7fb;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .summary p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        th {
+            background: #111827;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .true {
+            color: green;
+            font-weight: bold;
+        }
+
+        .false {
+            color: red;
+            font-weight: bold;
+        }
+
+        .agree {
+            color: green;
+        }
+
+        .disagree {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Rule vs ML Leakage Detection</h1>
+
+<!-- 🔥 SUMMARY INSIGHTS -->
+<div class="summary">
+    <h2>Summary Insights</h2>
+
+    <p><b>Total Samples:</b> {{ total }}</p>
+    <p><b>Agreement Rate:</b> {{ agreement_rate }}</p>
+
+    <p><b>Rule Detected Leaks:</b> {{ rule_positive }}</p>
+    <p><b>ML Detected Leaks:</b> {{ ml_positive }}</p>
+
+    <p><b>ML Extra Detections (rule missed):</b> {{ ml_extra }}</p>
+    <p><b>Rule Extra Detections (ML missed):</b> {{ rule_extra }}</p>
+</div>
+
+<table>
+    <tr>
+        <th>Prompt</th>
+        <th>Rule</th>
+        <th>ML</th>
+        <th>Confidence</th>
+        <th>Agreement</th>
+    </tr>
+
+    {% for row in data %}
+    <tr>
+        <td>{{ row.prompt|truncatechars:60 }}</td>
+
+        <td class="{% if row.rule %}true{% else %}false{% endif %}">
+            {{ row.rule }}
+        </td>
+
+        <td class="{% if row.ml %}true{% else %}false{% endif %}">
+            {{ row.ml }}
+        </td>
+
+        <td>
+            {% if row.confidence %}
+                {{ row.confidence|floatformat:2 }}
+            {% else %}
+                -
+            {% endif %}
+        </td>
+
+        <td>
+            {% if row.agreement == True %}
+                <span class="agree">✔</span>
+            {% elif row.agreement == False %}
+                <span class="disagree">✘</span>
+            {% else %}
+                -
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>
