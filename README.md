@@ -60,6 +60,8 @@ See:
 - [Preregistration template](docs/PREREGISTRATION_TEMPLATE.md)
 - [Frozen open-model pilot protocol](docs/PILOT_PROTOCOL_V1.md)
 - [Open-model pilot execution record](docs/PILOT_RUN_V1.md)
+- [Frozen confirmatory protocol](docs/CONFIRMATORY_PROTOCOL_V1.md)
+- [Pre-results manuscript shell](docs/MANUSCRIPT_V1.md)
 
 ## Benchmark v1 design
 
