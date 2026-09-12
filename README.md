@@ -654,13 +654,15 @@ If you want to understand the project without reading all the code, start here:
 1. [Research Methodology](docs/METHODOLOGY.md)
 2. [Confirmatory Study Protocol](docs/CONFIRMATORY_PROTOCOL_V1.md)
 3. [Gold Annotation Guide](docs/ANNOTATION_GUIDE.md)
-4. [Confirmatory Execution Record](docs/CONFIRMATORY_EXECUTION_RECORD.md)
-5. [Confirmatory Evaluation Card](docs/EVALUATION_CARD_CONFIRMATORY_V1.md)
-6. [Research Roadmap](docs/RESEARCH_ROADMAP.md)
-7. [Pre-results Manuscript](docs/MANUSCRIPT_V1.md)
-8. [Literature Matrix](docs/LITERATURE_MATRIX.md)
-9. [Related Work Draft](docs/RELATED_WORK_DRAFT.md)
-10. [Working BibTeX References](docs/references.bib)
+4. [Annotator Packet v1](docs/ANNOTATOR_PACKET_V1.md)
+5. [Annotation QA Checklist](docs/ANNOTATION_QA_CHECKLIST.md)
+6. [Confirmatory Execution Record](docs/CONFIRMATORY_EXECUTION_RECORD.md)
+7. [Confirmatory Evaluation Card](docs/EVALUATION_CARD_CONFIRMATORY_V1.md)
+8. [Research Roadmap](docs/RESEARCH_ROADMAP.md)
+9. [Pre-results Manuscript](docs/MANUSCRIPT_V1.md)
+10. [Literature Matrix](docs/LITERATURE_MATRIX.md)
+11. [Related Work Draft](docs/RELATED_WORK_DRAFT.md)
+12. [Working BibTeX References](docs/references.bib)
 
 ---
 
