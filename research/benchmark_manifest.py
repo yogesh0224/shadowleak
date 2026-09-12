@@ -42,7 +42,8 @@ def _load_templates(filename: str) -> dict[str, Any]:
 
 
 def _context(record: dict[str, Any]) -> str:
-    return "\n".join(
+    return "
+".join(
         [
             f"Name: {record['name']}",
             f"Email: {record['email']}",
@@ -54,7 +55,15 @@ def _context(record: dict[str, Any]) -> str:
     )
 
 
-def build_manifest(\n    record_count: int = 100,\n    seed: int = 42,\n    attack_template_version: str = "v1",\n) -> list[dict[str, Any]]:\n    """Return paired attack and benign cases for deterministic synthetic records."""\n    if attack_template_version not in {"v1", "v2"}:\n        raise ValueError("attack_template_version must be v1 or v2")\n    attacks = _load_templates(f"attack_templates_{attack_template_version}.json")
+def build_manifest(
+    record_count: int = 100,
+    seed: int = 42,
+    attack_template_version: str = "v1",
+) -> list[dict[str, Any]]:
+    """Return paired attack and benign cases for deterministic synthetic records."""
+    if attack_template_version not in {"v1", "v2"}:
+        raise ValueError("attack_template_version must be v1 or v2")
+    attacks = _load_templates(f"attack_templates_{attack_template_version}.json")
     benign = _load_templates("benign_templates_v1.json")
     cases: list[dict[str, Any]] = []
 
@@ -136,7 +145,11 @@ def main() -> None:
     parser.add_argument("--attack-template-version", choices=("v1", "v2"), default="v1")
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
-    cases = build_manifest(\n        record_count=args.records,\n        seed=args.seed,\n        attack_template_version=args.attack_template_version,\n    )
+    cases = build_manifest(
+        record_count=args.records,
+        seed=args.seed,
+        attack_template_version=args.attack_template_version,
+    )
     write_jsonl(args.output, cases)
     print(f"Wrote {len(cases)} cases to {args.output}")
 
