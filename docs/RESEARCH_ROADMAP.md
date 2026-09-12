@@ -15,6 +15,8 @@
 - [x] implement blinded queues, a separate case key, and adjudication checks;
 - [x] implement Wilson intervals, exact McNemar tests, failure accounting, and
   inter-annotator agreement;
+- [x] freeze and automate a two-model feasibility pilot using immutable,
+  ungated model revisions;
 - [ ] preregister hypotheses, primary outcomes, exclusions, and model selection;
 - [ ] evaluate multiple immutable model revisions over repeated seeds;
 - [ ] complete two independent annotations and adjudication;

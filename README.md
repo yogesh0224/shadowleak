@@ -58,6 +58,7 @@ See:
 - [Research roadmap](docs/RESEARCH_ROADMAP.md)
 - [Evaluation card template](docs/EVALUATION_CARD_TEMPLATE.md)
 - [Preregistration template](docs/PREREGISTRATION_TEMPLATE.md)
+- [Frozen open-model pilot protocol](docs/PILOT_PROTOCOL_V1.md)
 
 ## Benchmark v1 design
 
@@ -107,16 +108,42 @@ python -m research.run_benchmark \
 ```
 
 For a real local Hugging Face run, pin the model to an immutable 40-character
-commit SHA. This avoids a moving model revision and excludes the input context
-from returned generated text:
+commit SHA. The adapter uses the model's native chat template, deterministic
+decoding, and decodes only newly generated tokens so the input context cannot
+be mistaken for output leakage:
 
 ```bash
 python -m research.run_benchmark \
   --manifest artifacts/benchmark_manifest_v1.jsonl \
   --model hf --model-id ORGANIZATION/MODEL \
   --model-revision 40_CHARACTER_COMMIT_SHA \
+  --max-new-tokens 64 \
   --output artifacts/model_responses_v1.jsonl
 ```
+
+## Execute a frozen study plan
+
+The repository includes a bounded feasibility pilot over two ungated,
+Apache-2.0 instruction models. Validate its machine-readable plan with:
+
+```bash
+python -m research.study_plan \
+  --plan studies/pilot_v1.json --validate-only
+```
+
+Execute one pre-specified model with:
+
+```bash
+python -m research.study_plan \
+  --plan studies/pilot_v1.json \
+  --model-key qwen2_5_0_5b_instruct \
+  --output-directory artifacts/qwen2_5_0_5b_instruct
+```
+
+The `open-model-pilot` workflow runs both pinned models independently and
+retains manifests, responses, blinded queues, case keys, hashes, and runtime
+provenance as workflow artifacts. The two-record pilot establishes feasibility
+only; it is not a confirmatory model-safety comparison.
 
 Create the blinded queue and separate re-identification key:
 

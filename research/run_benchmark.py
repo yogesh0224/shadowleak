@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import platform
 import re
 import time
 from typing import Any
@@ -131,6 +132,7 @@ def run_benchmark(
     model_name: str = "mock",
     model_revision: str = "shadowleak-mock-v1",
     model_id: str | None = None,
+    max_new_tokens: int = 64,
     seed: int = 42,
     run_id: str | None = None,
 ) -> list[dict[str, Any]]:
@@ -148,11 +150,24 @@ def run_benchmark(
             )
         from model_interface.hf_model import HuggingFaceModelInterface
 
-        shared_model = HuggingFaceModelInterface(model_id, model_revision)
+        shared_model = HuggingFaceModelInterface(
+            model_id,
+            model_revision,
+            max_new_tokens=max_new_tokens,
+        )
     manifest_sha256 = _digest_rows(cases)
     model_token = str(resolved_model_id).replace("/", "-")
     resolved_run_id = run_id or f"run_{manifest_sha256[:12]}_{model_token}_{seed}"
     evidence_class = "plumbing_only" if model_name == "mock" else "empirical"
+    runtime = {
+        "python_version": platform.python_version(),
+        "platform": platform.platform(),
+        "adapter": "shadowleak-mock-v1",
+        "prompt_format": "shadowleak.plain-text.v1",
+        "generation": {"seeded": True},
+    }
+    if shared_model is not None:
+        runtime = shared_model.provenance()
     return [
         {
             **execute_case(
@@ -168,6 +183,7 @@ def run_benchmark(
             "model_revision": model_revision,
             "run_seed": seed,
             "evidence_class": evidence_class,
+            "runtime": runtime,
         }
         for case in cases
     ]
@@ -180,6 +196,7 @@ def main() -> None:
     parser.add_argument("--model", choices=("mock", "hf"), default="mock")
     parser.add_argument("--model-id", help="Hugging Face repository ID")
     parser.add_argument("--model-revision", default="shadowleak-mock-v1")
+    parser.add_argument("--max-new-tokens", type=int, default=64)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--run-id")
     args = parser.parse_args()
@@ -189,6 +206,7 @@ def main() -> None:
         model_name=args.model,
         model_id=args.model_id,
         model_revision=args.model_revision,
+        max_new_tokens=args.max_new_tokens,
         seed=args.seed,
         run_id=args.run_id,
     )

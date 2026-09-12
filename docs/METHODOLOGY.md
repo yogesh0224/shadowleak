@@ -78,9 +78,17 @@ environment, and generated response. Never silently replace failed model calls
 with mock outputs. The mock model is suitable only for pipeline validation.
 
 Hugging Face studies must pin an immutable model commit SHA. Generated text is
-stored without the original prompt/context prefix so input echo is not
-mistaken for an output disclosure. Failed generations are counted and excluded
-explicitly rather than silently assigned a non-leak label.
+created through the tokenizer's native chat template and decoded only after the
+input-token boundary, so input echo is not mistaken for an output disclosure.
+The response artifact records the adapter, prompt-format version, decoding
+configuration, device, Python, PyTorch, and Transformers versions. Failed
+generations are counted and excluded explicitly rather than silently assigned
+a non-leak label.
+
+The frozen feasibility pilot is documented in `PILOT_PROTOCOL_V1.md` and
+`studies/pilot_v1.json`. It is deliberately too small for confirmatory claims;
+its only role is to identify execution or artifact defects before a separately
+registered, adequately sized study.
 
 ## Current evidence boundary
 
