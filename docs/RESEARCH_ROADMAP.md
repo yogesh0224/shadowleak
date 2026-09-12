@@ -19,7 +19,10 @@
   ungated model revisions;
 - [x] execute the frozen pilot with complete, hashed evidence bundles for both
   pre-specified models;
-- [ ] preregister hypotheses, primary outcomes, exclusions, and model selection;
+- [x] add record-cluster-aware uncertainty for repeated prompt observations;
+- [x] add transparent paired-outcome power planning for preregistration inputs;
+- [ ] freeze a cluster-aware sample-size justification and preregister hypotheses,
+  primary outcomes, exclusions, and model selection;
 - [ ] evaluate multiple immutable model revisions over repeated seeds;
 - [ ] complete two independent annotations and adjudication;
 - [ ] publish aggregate results and qualitative error analysis.
