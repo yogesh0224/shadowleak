@@ -36,9 +36,21 @@ creating matched pairs. Pair IDs support within-case comparison; record IDs
 support grouped validation and prevent related observations crossing train/test
 boundaries.
 
-Version 1 is a single-turn benchmark. The `multi_turn_setup` family tests a
-conversation-scaffolding request inside one prompt; it is not evidence about a
-stateful multi-turn system. A genuine conversational adapter is future work.
+Version 1 is preserved for the frozen feasibility pilot. Benchmark v2 expands
+each of the nine attack families to three controlled prompt variants: two
+`development` variants and one pre-designated `heldout` variant. This supports
+a stronger generalization question than template-level averages alone.
+
+For detector generalization, held-out prompts are evaluated on sensitive records
+that are also absent from detector training. This avoids a weaker design in
+which the wording is unseen but record-specific signals have already appeared
+in training. The v2 generalization protocol therefore tests both unseen prompt
+variants and unseen sensitive records.
+
+Both v1 and v2 remain single-turn benchmarks. The `multi_turn_setup` family
+tests a conversation-scaffolding request inside one prompt; it is not evidence
+about a stateful multi-turn system. A genuine conversational adapter is future
+work.
 
 ## Outcomes
 
@@ -76,8 +88,10 @@ requires blinded human review.
 
 All responses associated with one sensitive record remain in the same fold.
 This prevents a classifier from learning record-specific strings in training
-and receiving related strings in testing. For a template-generalization claim,
-hold out attack templates or entire attack families as an additional analysis.
+and receiving related strings in testing. For a template-generalization claim, use the pre-designated v2 held-out prompt
+variants and keep test records disjoint from training records. Whole-family
+holdout remains an additional, harder external-validity analysis rather than a
+claim implied by the current v2 design.
 
 ## Reproducibility
 
