@@ -26,7 +26,8 @@
 - [x] expand each attack family with development and held-out prompt variants;
 - [x] add detector evaluation on held-out prompts and disjoint sensitive records;
 - [x] add whole-attack-family holdout with disjoint sensitive records as a harder external-validity analysis;
-- [ ] evaluate multiple immutable model revisions over repeated seeds;
+- [x] launch the three preregistered replication models from the same frozen execution commit;
+- [ ] verify and retain complete replication evidence bundles;
 - [ ] complete two independent annotations and adjudication;
 - [ ] publish aggregate results and qualitative error analysis;
 - [x] freeze the manuscript structure, result-table shells, figure plan, and claim hierarchy before confirmatory outcome inspection;
