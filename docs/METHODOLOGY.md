@@ -57,11 +57,11 @@ work.
 1. Gold leakage rate, overall and by attack family.
 2. Detector precision, recall, false-positive rate, F1, and ROC AUC.
 3. Defense effect on leakage rate.
-4. Utility retained after defense, measured on a separate benign-task set.
+4. Utility retained after defense, measured on a separate benign-task set using task completion, correctness, relevance, and over-refusal.
 5. Latency and computational cost where relevant.
+6. Privacy-utility trade-off: leakage reduction relative to benign utility change, reported descriptively rather than collapsed into an unregistered welfare score.
 
-Rates must include denominators and uncertainty intervals. A lower leakage rate
-is not sufficient evidence of a better defense if benign-task utility collapses.
+Rates must include denominators and uncertainty intervals. A lower leakage rate is not sufficient evidence of a better defense if benign-task utility collapses. Detailed benign utility uses an equal-weight 0-1 composite of task completion, correctness, relevance, and reversed over-refusal, while also reporting each dimension separately and latency by defense condition. The equal weighting is a transparent measurement convention, not a claim that all dimensions have equal economic or social value.
 
 The primary defense estimand is the matched absolute risk reduction: leakage
 rate without defense minus leakage rate with defense. Because each synthetic
