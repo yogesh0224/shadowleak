@@ -1,0 +1,149 @@
+{
+  "schema_version": "shadowleak.reporting-plan.v1",
+  "study_id": "shadowleak-confirmatory-v1",
+  "status": "frozen_before_confirmatory_outcome_inspection",
+  "frozen_date": "2026-09-12",
+  "title": "From Red-Team Finding to Accountable Evidence: Measuring Privacy Leakage in Language-Model Systems",
+  "narrative_order": [
+    "sample_accounting_and_protocol_compliance",
+    "primary_confirmatory_effect",
+    "secondary_attack_family_effects",
+    "benign_utility_and_latency",
+    "replication_models",
+    "external_validity",
+    "economic_sensitivity",
+    "governance_sensitivity",
+    "limitations"
+  ],
+  "tables": [
+    {
+      "id": "table_1",
+      "title": "Study execution and sample accounting",
+      "evidence_class": "protocol",
+      "fields": [
+        "model",
+        "role",
+        "planned_cases",
+        "completed_cases",
+        "failed_cases",
+        "failure_rate",
+        "annotated_cases"
+      ]
+    },
+    {
+      "id": "table_2",
+      "title": "Primary confirmatory defense effect on Qwen2.5-1.5B-Instruct",
+      "evidence_class": "primary_confirmatory",
+      "fields": [
+        "no_defense_leakage_rate",
+        "guardshield_leakage_rate",
+        "absolute_risk_reduction",
+        "cluster_bootstrap_95pct_ci",
+        "complete_pairs",
+        "incomplete_pairs_excluded",
+        "exact_mcnemar_pvalue"
+      ]
+    },
+    {
+      "id": "table_3",
+      "title": "Attack-family-specific defense effects on the primary model",
+      "evidence_class": "secondary_confirmatory",
+      "fields": [
+        "attack_family",
+        "no_defense_rate",
+        "guardshield_rate",
+        "absolute_risk_reduction",
+        "exact_mcnemar_pvalue",
+        "holm_adjusted_mcnemar_pvalue"
+      ]
+    },
+    {
+      "id": "table_4",
+      "title": "Benign utility and latency on the primary model",
+      "evidence_class": "secondary_descriptive",
+      "fields": [
+        "condition",
+        "utility_preserved",
+        "task_completion",
+        "correctness",
+        "relevance",
+        "over_refusal",
+        "utility_composite",
+        "mean_latency_ms"
+      ]
+    },
+    {
+      "id": "table_5",
+      "title": "Replication-model defense effects",
+      "evidence_class": "replication",
+      "fields": [
+        "model",
+        "no_defense_rate",
+        "guardshield_rate",
+        "absolute_risk_reduction",
+        "cluster_bootstrap_95pct_ci",
+        "failure_rate"
+      ]
+    },
+    {
+      "id": "table_6",
+      "title": "External-validity analyses",
+      "evidence_class": "secondary_or_exploratory",
+      "fields": [
+        "analysis",
+        "model",
+        "split_or_holdout",
+        "metric",
+        "estimate",
+        "uncertainty",
+        "evidence_label"
+      ]
+    }
+  ],
+  "figures": [
+    {
+      "id": "figure_1",
+      "title": "ShadowLeak confirmatory study flow",
+      "evidence_class": "protocol",
+      "source": "manifest, execution summaries, annotation accounting"
+    },
+    {
+      "id": "figure_2",
+      "title": "Defense-effect estimates across primary and replication models",
+      "evidence_class": "primary_plus_replication",
+      "source": "record-clustered paired leakage differences"
+    },
+    {
+      "id": "figure_3",
+      "title": "Privacy-utility trade-off by model and defense condition",
+      "evidence_class": "descriptive",
+      "source": "adjudicated leakage, multidimensional benign utility, latency"
+    },
+    {
+      "id": "figure_4",
+      "title": "Economic sensitivity decision regions",
+      "evidence_class": "exploratory_sensitivity",
+      "source": "full preregistered cost-weight grid"
+    }
+  ],
+  "supplementary": [
+    "full attack-family results",
+    "protected-field exploratory results",
+    "held-out prompt-variant results",
+    "whole-attack-family detector holdout",
+    "inter-annotator agreement and adjudication counts",
+    "governance-profile sensitivity table",
+    "failure and exclusion ledger",
+    "software and model provenance",
+    "artifact hashes"
+  ],
+  "claim_rules": {
+    "primary": "Only the preregistered overall defense effect on Qwen2.5-1.5B-Instruct may be described as the primary confirmatory finding.",
+    "secondary": "Attack-family tests on the primary model require Holm-Bonferroni-adjusted interpretation.",
+    "replication": "Additional models are replication evidence; non-significant or opposite-direction results must be reported alongside supporting results.",
+    "exploratory": "Protected-field, whole-family holdout, economics, governance, and unregistered interactions must be explicitly labeled exploratory or sensitivity analyses.",
+    "null_results": "Null, imprecise, and protocol-failing model results remain in the report.",
+    "no_cherry_picking": "No table, figure, subgroup, model, or cost-weight scenario may be omitted solely because it weakens the preferred narrative."
+  },
+  "evidence_boundary": "This reporting plan fixes presentation order and evidence labels before confirmatory outcome inspection. It does not determine the substantive conclusion."
+}
