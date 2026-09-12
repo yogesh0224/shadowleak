@@ -26,14 +26,24 @@ after inspecting outcomes.
 - Access mode and hardware:
 - Decoding configuration:
 - Records, templates, attack families, benign tasks, and repeated seeds:
+- Minimum effect of interest and rationale:
+- Assumed prevented/induced discordant-pair probabilities:
+- Alpha and target power:
+- Preliminary matched-pair requirement from `research.power_analysis`:
+- Planned number of independent synthetic records:
 - Planned number of successful matched pairs per model:
+- Clustering inflation or simulation used to justify the final record count:
 
 ## Outcomes
 
 - Primary outcome: adjudicated binary protected-attribute leakage.
 - Primary estimand: matched absolute risk reduction from `none` to
   `guardshield-v1`.
-- Primary test: exact two-sided McNemar test over discordant attack pairs.
+- Primary uncertainty analysis: record-cluster percentile bootstrap for the
+  matched absolute risk reduction, resampling whole `record_id` clusters.
+- Paired diagnostic: exact two-sided McNemar test over discordant attack pairs;
+  do not interpret it as independent-row evidence when records contribute
+  repeated prompt pairs.
 - Secondary outcomes: leakage by pre-specified family/field, leak-type counts,
   benign utility preservation, latency, and model-failure rate.
 
@@ -60,7 +70,10 @@ after inspecting outcomes.
 
 - Report every rate with numerator, denominator, and 95% Wilson interval.
 - Report both condition rates, paired absolute difference, discordant counts,
-  and exact McNemar p-value.
+  and exact McNemar p-value as a paired diagnostic.
+- Report the record-cluster bootstrap estimate, number of independent record
+  clusters, bootstrap seed/iterations, and 95% interval for the primary defense
+  estimand.
 - Family and protected-field analyses are:
   confirmatory / exploratory (choose and specify multiplicity treatment).
 - Multiple-comparison correction, if applicable:
