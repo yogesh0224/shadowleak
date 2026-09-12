@@ -195,6 +195,102 @@ def evaluate_prompt_generalization_classifier(
     }
 
 
+def evaluate_attack_family_holdout_classifier(
+    frame,
+    model=None,
+    seed: int = 42,
+):
+    """Leave one attack family out at a time while keeping test records disjoint.
+
+    Each fold trains on all other attack families using one subset of record IDs
+    and evaluates on the held-out attack family using a disjoint subset of record
+    IDs. This is a harder external-validity test than template holdout.
+    """
+    validate_training_frame(frame)
+    required = {"attack_strategy"}
+    missing = required - set(frame.columns)
+    if missing:
+        raise ValueError(f"Family-holdout frame is missing columns: {sorted(missing)}")
+
+    families = sorted({
+        str(value) for value in frame["attack_strategy"]
+        if str(value) not in {"benign", "not_applicable"}
+    })
+    if len(families) < 2:
+        raise ValueError("At least two attack families are required")
+
+    record_ids = sorted({str(value) for value in frame["record_id"]})
+    if len(record_ids) < 4:
+        raise ValueError("At least four independent records are required")
+
+    ranked_records = sorted(
+        record_ids,
+        key=lambda value: hashlib.sha256(
+            f"family:{seed}:{value}".encode("utf-8")
+        ).hexdigest(),
+    )
+    midpoint = len(ranked_records) // 2
+    train_records = set(ranked_records[midpoint:])
+    test_records = set(ranked_records[:midpoint])
+    record_strings = frame["record_id"].astype(str)
+    columns = feature_columns(frame)
+    estimator = model or RandomForestClassifier(
+        n_estimators=300,
+        random_state=seed,
+        class_weight="balanced",
+        min_samples_leaf=2,
+    )
+
+    folds = []
+    for family in families:
+        train = frame.loc[
+            record_strings.isin(train_records)
+            & ~frame["attack_strategy"].astype(str).eq(family)
+        ].copy()
+        test = frame.loc[
+            record_strings.isin(test_records)
+            & frame["attack_strategy"].astype(str).eq(family)
+        ].copy()
+        if train.empty or test.empty:
+            raise ValueError(f"Empty train/test split for held-out family {family}")
+
+        y_train = train["label"].astype(int).to_numpy()
+        y_test = test["label"].astype(int).to_numpy()
+        if len(set(y_train)) < 2:
+            raise ValueError(f"Training rows for family {family} must contain both classes")
+        if len(set(y_test)) < 2:
+            raise ValueError(f"Test rows for family {family} must contain both classes")
+
+        fitted = clone(estimator)
+        fitted.fit(train[columns], y_train)
+        predictions = fitted.predict(test[columns])
+        if hasattr(fitted, "predict_proba"):
+            probabilities = fitted.predict_proba(test[columns])[:, 1]
+        else:
+            probabilities = predictions.astype(float)
+
+        metrics = binary_metrics(y_test.tolist(), predictions.tolist())
+        metrics["roc_auc"] = float(roc_auc_score(y_test, probabilities))
+        folds.append({
+            "heldout_family": family,
+            "train_record_ids": sorted(train_records),
+            "test_record_ids": sorted(test_records),
+            "train_families": sorted({
+                str(value) for value in train["attack_strategy"]
+            }),
+            "test_size": int(len(test)),
+            "metrics": metrics,
+        })
+
+    return {
+        "protocol": "leave_one_attack_family_out_with_disjoint_records",
+        "seed": seed,
+        "feature_columns": columns,
+        "fold_count": len(folds),
+        "folds": folds,
+    }
+
+
 def write_evaluation_report(report: dict[str, object], path: str | Path) -> None:
     destination = Path(path)
     destination.parent.mkdir(parents=True, exist_ok=True)
