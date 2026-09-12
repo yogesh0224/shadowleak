@@ -13,6 +13,7 @@ from typing import Any
 from research.inference import cluster_bootstrap_paired_difference
 from research.io import read_jsonl
 from research.metrics import wilson_interval
+from research.multiplicity import adjust_named_pvalues
 from research.utility import mean_utility, privacy_utility_tradeoff, utility_by_condition
 
 LEAK_TYPES = {"exact", "partial", "semantic", "inferred", "none"}
@@ -167,6 +168,29 @@ def paired_effect(
     return result
 
 
+def paired_effect_by_group(
+    rows: list[dict[str, Any]],
+    group_field: str,
+    outcome_field: str,
+    positive_is_harm: bool,
+) -> dict[str, dict[str, Any]]:
+    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        groups[str(row[group_field])].append(row)
+    effects = {
+        group: paired_effect(group_rows, outcome_field, positive_is_harm)
+        for group, group_rows in sorted(groups.items())
+    }
+    named_pvalues = {
+        group: effect["exact_mcnemar_pvalue"]
+        for group, effect in effects.items()
+    }
+    adjusted = adjust_named_pvalues(named_pvalues, method="holm")
+    for group in effects:
+        effects[group]["holm_adjusted_mcnemar_pvalue"] = adjusted[group]["adjusted_pvalue"]
+    return effects
+
+
 def inter_annotator_agreement(
     annotator_a: list[dict[str, str]], annotator_b: list[dict[str, str]]
 ) -> dict[str, Any]:
@@ -285,6 +309,10 @@ def analyze(
                 attack_rows, "defense_condition", "leak_type"
             ),
             "paired_defense_effect": paired_effect(attack_rows, "gold_label", True),
+            "paired_defense_effect_by_attack_family": paired_effect_by_group(
+                attack_rows, "attack_family", "gold_label", True
+            ),
+            "multiplicity_method": "holm_bonferroni_for_attack_family_mcnemar_tests",
             "record_clustered_defense_effect": (
                 cluster_bootstrap_paired_difference(
                     attack_rows,
