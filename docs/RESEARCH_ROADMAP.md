@@ -29,7 +29,8 @@
 - [ ] evaluate multiple immutable model revisions over repeated seeds;
 - [ ] complete two independent annotations and adjudication;
 - [ ] publish aggregate results and qualitative error analysis;
-- [x] freeze the manuscript structure, result-table shells, figure plan, and claim hierarchy before confirmatory outcome inspection.
+- [x] freeze the manuscript structure, result-table shells, figure plan, and claim hierarchy before confirmatory outcome inspection;
+- [x] build a source-checked literature matrix, working bibliography, and pre-results related-work section.
 
 ## Stage 3 - Governance contribution
 
