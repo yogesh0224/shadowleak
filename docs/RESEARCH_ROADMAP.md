@@ -35,6 +35,8 @@
 - evaluate whether detector thresholds behave differently by language and
   protected-field type;
 - [x] quantify privacy-versus-utility trade-offs with multidimensional benign utility and latency;
+- [x] add economic sensitivity analysis showing how defense preference changes across leakage, utility-loss, and latency cost assumptions;
+- [ ] source stakeholder- or institution-specific cost assumptions for any substantive economics claim;
 - create a model evaluation card and auditable evidence bundle;
 - [x] add auditable decision profiles that compare measured leakage, utility, over-refusal, and latency against explicit organizational thresholds;
 - [ ] replace illustrative profiles with stakeholder- or institution-supplied thresholds for any substantive deployment study;
