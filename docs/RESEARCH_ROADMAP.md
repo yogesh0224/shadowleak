@@ -22,10 +22,10 @@
 - [x] add record-cluster-aware uncertainty for repeated prompt observations;
 - [x] add transparent paired-outcome power planning for preregistration inputs;
 - [ ] freeze a cluster-aware sample-size justification and preregister hypotheses,
-  primary outcomes, exclusions, and model selection;
+  primary outcomes, exclusions, model selection, multiplicity families, and model-level contrasts;
 - [x] expand each attack family with development and held-out prompt variants;
 - [x] add detector evaluation on held-out prompts and disjoint sensitive records;
-- [ ] add whole-attack-family holdout as a harder external-validity analysis;
+- [x] add whole-attack-family holdout with disjoint sensitive records as a harder external-validity analysis;
 - [ ] evaluate multiple immutable model revisions over repeated seeds;
 - [ ] complete two independent annotations and adjudication;
 - [ ] publish aggregate results and qualitative error analysis.
