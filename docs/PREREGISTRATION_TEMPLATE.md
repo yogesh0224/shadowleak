@@ -82,6 +82,19 @@ after inspecting outcomes.
 - Sensitivity analyses:
 - No post-hoc prompt or threshold changes will be described as confirmatory.
 
+## Economic sensitivity analysis
+
+- Leakage-cost weight grid and rationale:
+- Utility-loss-cost weight grid and rationale:
+- Latency-cost weight grid and rationale:
+- Source of stakeholder or institutional weights, if any:
+- Whether weights were fixed before outcome inspection: yes / no
+- Primary comparison: configuration preferred under each pre-specified weight vector.
+- Reporting rule: show the full sensitivity grid or decision regions, not only
+  the weight vector that favors the preferred narrative.
+
+Treat post-hoc weights as exploratory.
+
 ## Governance decision rule
 
 - Deployment context:
