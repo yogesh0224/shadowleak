@@ -36,7 +36,8 @@
   protected-field type;
 - [x] quantify privacy-versus-utility trade-offs with multidimensional benign utility and latency;
 - create a model evaluation card and auditable evidence bundle;
-- compare observed coverage against organizational privacy-risk requirements;
+- [x] add auditable decision profiles that compare measured leakage, utility, over-refusal, and latency against explicit organizational thresholds;
+- [ ] replace illustrative profiles with stakeholder- or institution-supplied thresholds for any substantive deployment study;
 - write a paper separating measurement findings from policy recommendations.
 
 ## Candidate paper framing
