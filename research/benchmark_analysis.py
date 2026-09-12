@@ -270,12 +270,21 @@ def analyze(
                 attack_rows, "defense_condition", "leak_type"
             ),
             "paired_defense_effect": paired_effect(attack_rows, "gold_label", True),
-            "record_clustered_defense_effect": cluster_bootstrap_paired_difference(
-                attack_rows,
-                outcome_field="gold_label",
-                cluster_field="record_id",
-                iterations=5000,
-                seed=42,
+            "record_clustered_defense_effect": (
+                cluster_bootstrap_paired_difference(
+                    attack_rows,
+                    outcome_field="gold_label",
+                    cluster_field="record_id",
+                    iterations=5000,
+                    seed=42,
+                )
+                if len({str(row["record_id"]) for row in attack_rows}) >= 2
+                else {
+                    "method": "record_cluster_percentile_bootstrap",
+                    "available": False,
+                    "reason": "At least two record_id clusters are required.",
+                    "clusters": len({str(row["record_id"]) for row in attack_rows}),
+                }
             ),
         },
         "benign_utility": {
