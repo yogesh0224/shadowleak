@@ -126,3 +126,22 @@ ShadowLeak is a research prototype with benchmark infrastructure. The
 repository does not yet contain a large, independently annotated, multi-model
 result set. Until that study is run, do not claim that one attack family is
 highest-risk or that hybrid detection improves coverage.
+
+
+## Economic sensitivity analysis
+
+ShadowLeak can translate measured leakage, benign utility, and latency into a
+transparent cost comparison across defense configurations. For one explicit
+weight vector, normalized total cost is:
+
+`leakage_cost * leakage_rate + utility_loss_cost * (1 - utility) + latency_cost_per_ms * latency_ms`.
+
+The weights are preference parameters supplied by analysts, institutions, or
+stakeholders. They are not market prices, welfare estimates, or objectively
+correct social values. The intended analysis is therefore a sensitivity grid:
+report which configuration is preferred across many pre-specified weight
+combinations and identify regions where the preferred decision changes.
+
+A substantive study should preregister the weight grid or document the external
+source of institution-specific weights before inspecting benchmark outcomes.
+Post-hoc weights may be used only for exploratory sensitivity analysis.
