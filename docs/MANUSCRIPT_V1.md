@@ -76,21 +76,105 @@ The paper must preserve the following hierarchy:
 
 ## 2. Related work
 
-This section will be completed from a separately documented literature search.
+### 2.1 Privacy leakage and memorization
 
-Required themes:
+Prior work shows that language models can expose memorized training examples
+under adversarial querying, including personally identifying strings
+[@carlini2021extracting]. Memorization also varies with factors such as model
+capacity, duplication, and prompting context [@carlini2023memorization], while
+later work demonstrates scalable extractable memorization across open,
+semi-open, and closed language models [@nasr2023scalable].
 
-- language-model privacy leakage and extraction;
-- prompt injection / adversarial prompting as an evaluation setting;
-- empirical red teaming and benchmark validity;
-- privacy-preserving inference and output defenses;
-- human annotation reliability in safety evaluation;
-- clustered/repeated-measures evaluation design;
-- AI governance, model evaluation documentation, and auditability;
-- privacy-utility trade-offs and decision-theoretic sensitivity analysis.
+ShadowLeak studies a different privacy threat model. It does not attempt to
+recover private training examples. Instead, it places visibly synthetic
+protected attributes in model context and measures whether adversarial prompts
+cause those attributes to be disclosed. Training-data extraction therefore
+motivates the privacy problem but is not evidence that ShadowLeak measures
+memorization.
 
-Do not cite sources from memory. Every claim in the final related-work section
-must be supported by a checked citation.
+### 2.2 Adversarial prompting and benchmark validity
+
+Research on prompt injection and jailbreaking increasingly emphasizes
+systematic attack definitions, common evaluation frameworks, and reproducible
+artifacts rather than isolated successful prompts [@liu2023promptinjection;
+@schulhoff2023hackaprompt; @chao2024jailbreakbench]. Benchmark research also
+shows that common automated success measures can materially overstate jailbreak
+effectiveness relative to human judgment [@souly2024strongreject].
+
+These findings motivate ShadowLeak's fixed attack families, versioned prompt
+variants, exact model provenance, matched defended and undefended cases, and
+separation of automated detector outputs from human gold labels. Broader
+trustworthiness benchmarks additionally motivate measuring over-refusal and
+benign utility rather than treating more blocking as automatically better
+[@wang2024donotanswer; @huang2024trustllm].
+
+### 2.3 Human annotation and disagreement
+
+Human evaluation introduces measurement uncertainty of its own. Agreement
+coefficients such as Cohen's kappa depend on assumptions about annotators and
+label structure [@artstein2008agreement]. Work on subjective NLP annotation
+further shows that disagreement can carry meaningful information and that
+filtering to high-agreement cases can change downstream evaluation
+[@leonardelli2021disagreement]. Broader NLG meta-evaluation has also identified
+substantial inconsistency in human-evaluation definitions and reporting
+[@howcroft2020evaluation].
+
+ShadowLeak therefore uses a written rubric, two independent annotation passes,
+pre-adjudication raw agreement and Cohen's kappa, disagreement-only
+adjudication, and a separate case key withheld until final labels are frozen.
+
+### 2.4 Documentation, auditing, and governance
+
+Model Cards and Datasheets for Datasets established widely used patterns for
+documenting intended use, evaluation conditions, dataset composition, and
+limitations [@mitchell2019modelcards; @gebru2021datasheets]. Raji et al. extend
+this documentation logic into an end-to-end organizational auditing framework
+[@raji2020auditing].
+
+The NIST AI Risk Management Framework similarly emphasizes governance,
+mapping, measurement, and management of AI risk, including documented
+evaluation procedures, uncertainty, privacy-risk measurement, and trade-offs
+among trustworthiness characteristics [@nist2023airmf]. The Generative AI
+Profile extends that framing to generative systems [@nist2024genai], while
+recent audit-card work argues that evaluation results require contextual
+information about scope, process integrity, access, and review
+[@staufer2025auditcards].
+
+ShadowLeak adopts this evidence-oriented framing while retaining a narrower
+claim. Its governance profiles are illustrative sensitivity scenarios rather
+than compliance tests.
+
+### 2.5 Privacy-utility and decision trade-offs
+
+Safety and privacy interventions may produce costs as well as benefits.
+Trustworthiness evaluations document exaggerated safety behavior and
+over-refusal [@huang2024trustllm], while more general privacy research treats
+privacy and utility as competing objectives rather than assuming one
+configuration dominates every decision context [@ficiu2023tradeoff].
+
+ShadowLeak therefore reports leakage, task completion, correctness, relevance,
+over-refusal, and latency separately before applying any decision weights.
+Its economic layer is a sensitivity analysis over explicit preference
+parameters, not an estimate of welfare or market prices.
+
+### 2.6 Research gap
+
+Existing work supplies strong components of the problem: privacy extraction,
+adversarial prompt benchmarks, human-evaluation methodology, documentation
+frameworks, and multidimensional trustworthiness assessment. ShadowLeak tests a
+combined workflow in which defended and undefended responses are paired within
+synthetic records, repeated prompts are handled at the record-cluster level,
+detector predictions are separated from blinded human gold labels, and
+governance/economic interpretation remains explicitly downstream of the
+technical evidence.
+
+The intended contribution is therefore a reproducible method for converting a
+red-team privacy finding into bounded, auditable evidence rather than a
+universal privacy defense or a new legal standard.
+
+The source-by-source claim boundaries are documented in
+`docs/LITERATURE_MATRIX.md`, with working BibTeX entries in
+`docs/references.bib`.
 
 ## 3. Methods
 
