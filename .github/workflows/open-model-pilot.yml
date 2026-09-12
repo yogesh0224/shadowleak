@@ -1,0 +1,52 @@
+name: open-model-pilot
+
+on:
+  push:
+    branches:
+      - codex/research-evaluation-v1
+    paths:
+      - studies/run_pilot_v1.trigger
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pilot:
+    name: ${{ matrix.model_key }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        model_key:
+          - qwen2_5_0_5b_instruct
+          - smollm2_360m_instruct
+    env:
+      HF_HOME: /tmp/shadowleak-huggingface
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-pilot.txt
+      - name: Install pinned pilot dependencies
+        run: pip install -r requirements-pilot.txt
+      - name: Validate frozen study plan
+        run: python -m research.study_plan --plan studies/pilot_v1.json --validate-only
+      - name: Execute pinned open-model pilot
+        run: >-
+          python -m research.study_plan
+          --plan studies/pilot_v1.json
+          --model-key ${{ matrix.model_key }}
+          --output-directory artifacts/${{ matrix.model_key }}
+      - name: Upload auditable pilot artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: shadowleak-pilot-v1-${{ matrix.model_key }}
+          path: artifacts/${{ matrix.model_key }}/
+          if-no-files-found: warn
+          retention-days: 30

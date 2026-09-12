@@ -1,8 +1,13 @@
 import re
+from functools import lru_cache
 from rapidfuzz import fuzz
-from sentence_transformers import SentenceTransformer, util
 
-semantic_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+@lru_cache(maxsize=1)
+def get_semantic_backend():
+    from sentence_transformers import SentenceTransformer, util
+
+    return SentenceTransformer("all-MiniLM-L6-v2"), util
 
 
 def extract_email_count(text: str) -> int:
@@ -43,6 +48,7 @@ def max_semantic_score(secret_values, output_text: str) -> float:
     if not output_text or not secret_values:
         return 0.0
 
+    semantic_model, util = get_semantic_backend()
     output_emb = semantic_model.encode(output_text, convert_to_tensor=True)
     best = 0.0
 

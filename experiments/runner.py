@@ -1,4 +1,6 @@
 import time
+import random
+from collections import defaultdict
 
 from core.models import (
     Experiment,
@@ -12,7 +14,6 @@ from core.models import (
 from prompt_engine.generator import generate_prompts_for_record
 from experiments.context_builder import build_context_from_record
 from model_interface.mock_model import MockModelInterface
-from model_interface.hf_model import HuggingFaceModelInterface
 
 from leakage_detector.orchestrator import analyze_output
 from scoring.engine import calculate_leakage_risk, get_risk_band
@@ -20,8 +21,6 @@ from scoring.engine import calculate_leakage_risk, get_risk_band
 from guardshield.prompt_filter import is_prompt_risky, sanitize_prompt
 from guardshield.output_sanitizer import sanitize_output
 
-# 🔥 ADD THIS (ML)
-from ml_detector.predict import LeakMLPredictor
 from core.models import MLPredictionResult
 
 from adversarial_engine.generator import generate_adversarial_prompts_for_record
@@ -36,17 +35,23 @@ FIELD_WEIGHTS = {
 }
 
 
-def get_model(model_name: str):
+def get_model(model_name: str, seed: int = 42):
     if model_name == "hf":
+        from model_interface.hf_model import HuggingFaceModelInterface
+
         return HuggingFaceModelInterface()
-    return MockModelInterface()
+    return MockModelInterface(seed=seed)
 
 
 def run_experiment(
     experiment_name="ShadowLeak Test",
     model_name="mock",
     use_guardshield=False,
+    seed=42,
+    record_limit=5,
+    prompts_per_record=8,
 ):
+    random.seed(seed)
     experiment = Experiment.objects.create(
         name=experiment_name,
         model_name=model_name,
@@ -54,21 +59,24 @@ def run_experiment(
         use_guardshield=use_guardshield,
     )
 
-    model = get_model(model_name)
+    model = get_model(model_name, seed=seed)
 
     # 🔥 INIT ML MODEL (SAFE)
     try:
+        from ml_detector.predict import LeakMLPredictor
+
         ml_predictor = LeakMLPredictor()
         print("ML model loaded successfully")
     except Exception as e:
         print("ML model NOT loaded:", e)
         ml_predictor = None
 
-    records = SensitiveRecord.objects.all()[:5]
+    records = SensitiveRecord.objects.order_by("id")[:record_limit]
 
     total_prompts = 0
     leaking_prompts = 0
     total_risk_score = 0.0
+    leak_prompt_ids_by_type = defaultdict(set)
 
     for record in records:
         prompts = GeneratedPrompt.objects.filter(record=record)
@@ -78,7 +86,7 @@ def run_experiment(
             generate_adversarial_prompts_for_record(record, per_strategy=1)
             prompts = GeneratedPrompt.objects.filter(record=record)
 
-        prompts = prompts.order_by("-id")[:8]
+        prompts = prompts.order_by("id")[:prompts_per_record]
 
         context = build_context_from_record(record)
 
@@ -118,6 +126,9 @@ def run_experiment(
 
             if analysis_results:
                 leaking_prompts += 1
+
+            for leak_type in {result["leakage_type"] for result in analysis_results}:
+                leak_prompt_ids_by_type[leak_type].add(prompt.id)
 
             for result in analysis_results:
                 risk = calculate_leakage_risk(
@@ -168,9 +179,18 @@ def run_experiment(
     ExperimentSummary.objects.create(
         experiment=experiment,
         exposure_rate=round(exposure_rate, 4),
-        exact_leak_rate=0,
-        partial_leak_rate=0,
-        semantic_leak_rate=0,
+        exact_leak_rate=(
+            round(len(leak_prompt_ids_by_type["exact"]) / total_prompts, 4)
+            if total_prompts else 0
+        ),
+        partial_leak_rate=(
+            round(len(leak_prompt_ids_by_type["partial"]) / total_prompts, 4)
+            if total_prompts else 0
+        ),
+        semantic_leak_rate=(
+            round(len(leak_prompt_ids_by_type["semantic"]) / total_prompts, 4)
+            if total_prompts else 0
+        ),
         overall_risk_score=round(overall_risk_score, 4),
         risk_level=risk_level,
     )

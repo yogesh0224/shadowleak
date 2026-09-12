@@ -1,40 +1,45 @@
 import os
+from datetime import datetime, timezone
 import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
 from sklearn.ensemble import RandomForestClassifier
 
 from ml_detector.dataset_builder import build_dataset
+from ml_detector.evaluation import evaluate_grouped_classifier, feature_columns, write_evaluation_report
 
 
 MODEL_DIR = "ml_detector/model_artifacts"
 MODEL_PATH = os.path.join(MODEL_DIR, "leak_classifier.joblib")
 
 
-def train_binary_classifier():
-    df = build_dataset(binary=True)
+def train_binary_classifier(gold_labels_path, report_path="reports/grouped_cv_metrics.json", seed=42):
+    df = build_dataset(gold_labels_path=gold_labels_path, strict=True)
 
     if df.empty:
         raise ValueError("Dataset is empty. Run experiments first.")
 
-    X = df.drop(columns=["label", "response_id"])
-    y = df["label"]
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=y
-    )
+    evaluation = evaluate_grouped_classifier(df, n_splits=5, seed=seed)
+    evaluation["created_at"] = datetime.now(timezone.utc).isoformat()
+    evaluation["gold_labels_path"] = os.fspath(gold_labels_path)
+    write_evaluation_report(evaluation, report_path)
 
     model = RandomForestClassifier(
-        n_estimators=200,
-        random_state=42,
+        n_estimators=300,
+        random_state=seed,
         class_weight="balanced",
+        min_samples_leaf=2,
     )
-    model.fit(X_train, y_train)
-
-    preds = model.predict(X_test)
-    print(classification_report(y_test, preds))
+    columns = feature_columns(df)
+    model.fit(df[columns], df["label"].astype(int))
 
     os.makedirs(MODEL_DIR, exist_ok=True)
-    joblib.dump(model, MODEL_PATH)
+    joblib.dump(
+        {
+            "model": model,
+            "feature_columns": columns,
+            "evaluation_protocol": evaluation["protocol"],
+            "seed": seed,
+        },
+        MODEL_PATH,
+    )
 
-    print(f"Model saved to {MODEL_PATH}")
+    return evaluation

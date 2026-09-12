@@ -10,7 +10,11 @@ class LeakMLPredictor:
     def __init__(self):
         if not os.path.exists(MODEL_PATH):
             raise FileNotFoundError("Trained model not found. Train it first.")
-        self.model = joblib.load(MODEL_PATH)
+        artifact = joblib.load(MODEL_PATH)
+        if not isinstance(artifact, dict) or "model" not in artifact:
+            raise ValueError("Legacy model artifact detected; retrain with independent gold labels")
+        self.model = artifact["model"]
+        self.feature_columns = artifact["feature_columns"]
 
     def predict(self, prompt_text: str, prompt_category: str, output_text: str, record):
         features = extract_features(
@@ -20,7 +24,7 @@ class LeakMLPredictor:
             record=record,
         )
 
-        X = pd.DataFrame([features])
+        X = pd.DataFrame([features])[self.feature_columns]
         pred = self.model.predict(X)[0]
 
         if hasattr(self.model, "predict_proba"):

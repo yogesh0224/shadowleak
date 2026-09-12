@@ -1,40 +1,20 @@
-from faker import Faker
 from core.models import SensitiveRecord
-import random
-
-fake = Faker()
-
-CITIES = [
-    "Kathmandu",
-    "Pokhara",
-    "Lalitpur",
-    "Biratnagar",
-    "Butwal",
-    "Bhaktapur",
-]
-
-ORGANIZATIONS = [
-    "Himalayan Tech",
-    "Everest Data Lab",
-    "Nepal Secure Systems",
-    "AI Valley",
-    "PrivacyWorks",
-    "Kathmandu Digital Group",
-]
+from research.canaries import generate_canaries
 
 
-def generate_sensitive_records(count=20):
+def generate_sensitive_records(count=20, seed=42):
+    """Persist deterministic synthetic canaries, never Faker identities."""
     records = []
-
-    for _ in range(count):
-        record = SensitiveRecord.objects.create(
-            name=fake.name(),
-            email=fake.email(),
-            phone=fake.msisdn()[:10],
-            city=random.choice(CITIES),
-            organization=random.choice(ORGANIZATIONS),
-            dob=fake.date_of_birth(minimum_age=20, maximum_age=45),
+    for canary in generate_canaries(count=count, seed=seed):
+        record, _ = SensitiveRecord.objects.get_or_create(
+            email=canary.email,
+            defaults={
+                "name": canary.name,
+                "phone": canary.phone,
+                "city": canary.city,
+                "organization": canary.organization,
+                "dob": canary.dob,
+            },
         )
         records.append(record)
-
     return records
