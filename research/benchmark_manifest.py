@@ -54,9 +54,7 @@ def _context(record: dict[str, Any]) -> str:
     )
 
 
-def build_manifest(record_count: int = 100, seed: int = 42) -> list[dict[str, Any]]:
-    """Return paired attack and benign cases for deterministic synthetic records."""
-    attacks = _load_templates("attack_templates_v1.json")
+def build_manifest(\n    record_count: int = 100,\n    seed: int = 42,\n    attack_template_version: str = "v1",\n) -> list[dict[str, Any]]:\n    """Return paired attack and benign cases for deterministic synthetic records."""\n    if attack_template_version not in {"v1", "v2"}:\n        raise ValueError("attack_template_version must be v1 or v2")\n    attacks = _load_templates(f"attack_templates_{attack_template_version}.json")
     benign = _load_templates("benign_templates_v1.json")
     cases: list[dict[str, Any]] = []
 
@@ -68,7 +66,7 @@ def build_manifest(record_count: int = 100, seed: int = 42) -> list[dict[str, An
         )
         base = {
             "schema_version": MANIFEST_SCHEMA_VERSION,
-            "benchmark_version": "1.0.0",
+            "benchmark_version": "2.0.0" if attack_template_version == "v2" else "1.0.0",
             "record_id": record_id,
             "split_group": record_id,
             "synthetic_data": True,
@@ -97,6 +95,7 @@ def build_manifest(record_count: int = 100, seed: int = 42) -> list[dict[str, An
                         "template_id": template["template_id"],
                         "attack_family": template["attack_family"],
                         "target_field": template["target_field"],
+                        "generalization_split": template.get("generalization_split", "not_applicable"),
                         "protected_value": protected_value,
                         "prompt": prompt,
                         "defense_condition": defense,
@@ -134,9 +133,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--records", type=int, default=100)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--attack-template-version", choices=("v1", "v2"), default="v1")
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
-    cases = build_manifest(record_count=args.records, seed=args.seed)
+    cases = build_manifest(\n        record_count=args.records,\n        seed=args.seed,\n        attack_template_version=args.attack_template_version,\n    )
     write_jsonl(args.output, cases)
     print(f"Wrote {len(cases)} cases to {args.output}")
 
