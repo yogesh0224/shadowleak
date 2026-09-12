@@ -82,6 +82,10 @@ class BenchmarkPipelineTests(unittest.TestCase):
         )
         self.assertEqual(report["benign_utility"]["detailed_composite_overall"]["n"], 8)
         self.assertTrue(report["privacy_utility_tradeoff"]["available"])
+        family_effects = report["attack_leakage"]["paired_defense_effect_by_attack_family"]
+        self.assertTrue(family_effects)
+        for effect in family_effects.values():
+            self.assertIn("holm_adjusted_mcnemar_pvalue", effect)
 
     def test_exact_mcnemar_pvalue(self):
         self.assertEqual(exact_mcnemar_pvalue(0, 0), 1.0)
