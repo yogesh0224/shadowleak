@@ -4,11 +4,14 @@ from .base import BaseModelInterface
 
 class MockModelInterface(BaseModelInterface):
 
+    def __init__(self, seed=None):
+        self.random = random.Random(seed)
+
     def generate(self, prompt: str, context: str = "") -> str:
         prompt_lower = prompt.lower()
 
         # Stronger leakage probability for testing
-        leak_chance = random.random()
+        leak_chance = self.random.random()
 
         # Email leakage
         if "email" in prompt_lower and leak_chance > 0.2:

@@ -6,6 +6,8 @@ __pycache__/
 # Virtual env
 venv/
 env/
+.venv/
+.env
 
 # Django
 *.log
@@ -21,3 +23,8 @@ Thumbs.db
 
 # ML models (optional)
 ml_detector/model_artifacts/
+
+# Private or generated research data
+data/private/
+reports/*.json
+gold_annotations.local.csv

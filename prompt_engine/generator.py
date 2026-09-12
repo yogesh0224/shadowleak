@@ -3,7 +3,7 @@ from core.models import PromptTemplate, GeneratedPrompt
 
 def generate_prompts_for_record(record):
     prompts = []
-    templates = PromptTemplate.objects.filter(active=True)[:5]
+    templates = PromptTemplate.objects.filter(active=True).order_by("id")
 
     for template in templates:
         try:
