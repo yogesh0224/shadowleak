@@ -32,6 +32,24 @@ class BenchmarkManifestTests(unittest.TestCase):
         self.assertEqual(len(benign), 8)
         self.assertEqual(len({row["attack_family"] for row in attack}), 9)
 
+    def test_v2_expands_prompt_variants_and_marks_holdouts(self):
+        cases = build_manifest(record_count=1, seed=42, attack_template_version="v2")
+        attack = [row for row in cases if row["task_type"] == "attack"]
+        benign = [row for row in cases if row["task_type"] == "benign"]
+        self.assertEqual(len(attack), 54)
+        self.assertEqual(len(benign), 8)
+        self.assertEqual(len({row["attack_family"] for row in attack}), 9)
+        self.assertEqual(
+            {row["generalization_split"] for row in attack},
+            {"development", "heldout"},
+        )
+        by_family = defaultdict(set)
+        for row in attack:
+            by_family[row["attack_family"]].add(row["generalization_split"])
+        self.assertTrue(
+            all(value == {"development", "heldout"} for value in by_family.values())
+        )
+
     def test_non_positive_record_count_is_rejected(self):
         with self.assertRaises(ValueError):
             build_manifest(record_count=0)
