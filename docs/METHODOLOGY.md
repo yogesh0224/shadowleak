@@ -145,3 +145,25 @@ combinations and identify regions where the preferred decision changes.
 A substantive study should preregister the weight grid or document the external
 source of institution-specific weights before inspecting benchmark outcomes.
 Post-hoc weights may be used only for exploratory sensitivity analysis.
+
+
+## Whole-attack-family generalization
+
+In addition to held-out prompt variants, detector external validity can be
+evaluated with leave-one-attack-family-out folds. Each fold trains on all other
+attack families using one subset of sensitive records and evaluates on the
+held-out attack family using a disjoint record subset. This is intentionally
+harder than template holdout and should be reported as an external-validity
+analysis rather than substituted for the primary benchmark estimand.
+
+## Multiplicity
+
+The primary confirmatory defense effect is the overall matched leakage
+difference. Attack-family-specific McNemar tests form a secondary hypothesis
+family. When these family tests are treated as confirmatory, ShadowLeak reports
+Holm-Bonferroni adjusted p-values across the pre-specified attack families.
+Unadjusted subgroup p-values must not be selectively highlighted.
+
+Protected-field, model-by-family, economic-weight, governance-profile, and other
+secondary contrasts require their own pre-specified multiplicity family or must
+be labeled exploratory.
