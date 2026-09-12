@@ -1,0 +1,67 @@
+name: confirmatory-v1-replications
+
+on:
+  push:
+    branches:
+      - codex/confirmatory-study-design
+    paths:
+      - studies/run_confirmatory_v1_replications.trigger
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shadowleak-confirmatory-v1-replications
+  cancel-in-progress: false
+
+jobs:
+  replication:
+    name: ${{ matrix.model_key }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        model_key:
+          - qwen2_5_0_5b_instruct
+          - smollm2_360m_instruct
+          - tinyllama_1_1b_chat_v1
+    env:
+      HF_HOME: /tmp/shadowleak-huggingface
+      TOKENIZERS_PARALLELISM: "false"
+      FROZEN_EXECUTION_COMMIT: c136f4315ca5c224cc1d4f802750a3baec089a6f
+    steps:
+      - name: Checkout frozen execution code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.FROZEN_EXECUTION_COMMIT }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-pilot.txt
+      - name: Install pinned model dependencies
+        run: pip install -r requirements-pilot.txt
+      - name: Validate frozen confirmatory study plan
+        run: python -m research.study_plan --plan studies/confirmatory_v1.json --validate-only
+      - name: Execute frozen replication model
+        run: >-
+          python -m research.study_plan
+          --plan studies/confirmatory_v1.json
+          --model-key ${{ matrix.model_key }}
+          --output-directory artifacts/${{ matrix.model_key }}
+      - name: Record execution commit
+        if: always()
+        run: |
+          mkdir -p artifacts/${{ matrix.model_key }}
+          printf '%s\n' "${FROZEN_EXECUTION_COMMIT}" > artifacts/${{ matrix.model_key }}/execution_commit.txt
+      - name: Upload auditable replication artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: shadowleak-confirmatory-v1-${{ matrix.model_key }}
+          path: artifacts/${{ matrix.model_key }}/
+          if-no-files-found: warn
+          retention-days: 30
