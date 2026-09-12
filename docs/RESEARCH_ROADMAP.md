@@ -39,7 +39,8 @@
 - [x] quantify privacy-versus-utility trade-offs with multidimensional benign utility and latency;
 - [x] add economic sensitivity analysis showing how defense preference changes across leakage, utility-loss, and latency cost assumptions;
 - [ ] source stakeholder- or institution-specific cost assumptions for any substantive economics claim;
-- create a model evaluation card and auditable evidence bundle;
+- [x] create a pre-results confirmatory evaluation card and deterministic evidence-manifest builder;
+- [ ] finalize the evaluation card and auditable evidence bundle from completed confirmatory artifacts;
 - [x] add auditable decision profiles that compare measured leakage, utility, over-refusal, and latency against explicit organizational thresholds;
 - [ ] replace illustrative profiles with stakeholder- or institution-supplied thresholds for any substantive deployment study;
 - [ ] complete the final paper separating measurement findings from policy recommendations.
