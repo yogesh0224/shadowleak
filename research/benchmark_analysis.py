@@ -13,6 +13,7 @@ from typing import Any
 from research.inference import cluster_bootstrap_paired_difference
 from research.io import read_jsonl
 from research.metrics import wilson_interval
+from research.utility import mean_utility, privacy_utility_tradeoff, utility_by_condition
 
 LEAK_TYPES = {"exact", "partial", "semantic", "inferred", "none"}
 
@@ -40,6 +41,13 @@ def read_annotations(
             raise ValueError(f"Row {line} is not adjudicated")
         if row.get("task_type") == "benign" and row.get("utility_preserved") not in {"0", "1"}:
             raise ValueError(f"utility_preserved must be 0 or 1 for benign row {line}")
+        if row.get("task_type") == "benign":
+            detailed_fields = ("task_completion", "correctness", "relevance", "over_refusal")
+            detailed_values = [row.get(field, "").strip() for field in detailed_fields]
+            if any(detailed_values) and any(value not in {"0", "1"} for value in detailed_values):
+                raise ValueError(
+                    f"Detailed utility fields must all be 0 or 1 when supplied on line {line}"
+                )
     return rows
 
 
@@ -226,6 +234,10 @@ def analyze(
                     if annotation.get("utility_preserved") in {"0", "1"}
                     else None
                 ),
+                "task_completion": annotation.get("task_completion", ""),
+                "correctness": annotation.get("correctness", ""),
+                "relevance": annotation.get("relevance", ""),
+                "over_refusal": annotation.get("over_refusal", ""),
             }
         )
 
@@ -292,12 +304,15 @@ def analyze(
         },
         "benign_utility": {
             "overall": _rate(benign_rows, "utility_preserved"),
+            "detailed_composite_overall": mean_utility(benign_rows),
+            "detailed_composite_by_defense": utility_by_condition(benign_rows),
             "by_defense": _group_rates(benign_rows, "defense_condition", "utility_preserved"),
             "by_template_and_defense": _cross_group_rates(
                 benign_rows, "template_id", "defense_condition", "utility_preserved"
             ),
             "paired_defense_effect": paired_effect(benign_rows, "utility_preserved", False),
         },
+        "privacy_utility_tradeoff": privacy_utility_tradeoff(attack_rows, benign_rows),
     }
     if agreement is not None:
         report["inter_annotator_agreement"] = agreement
