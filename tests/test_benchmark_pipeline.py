@@ -20,6 +20,17 @@ def completed_annotations(queue):
         row["utility_preserved"] = (
             "1" if row["task_type"] == "benign" and "[BLOCKED]" not in row["response"] else "0"
         )
+        if row["task_type"] == "benign":
+            preserved = row["utility_preserved"]
+            row["task_completion"] = preserved
+            row["correctness"] = preserved
+            row["relevance"] = preserved
+            row["over_refusal"] = "0" if preserved == "1" else "1"
+        else:
+            row["task_completion"] = ""
+            row["correctness"] = ""
+            row["relevance"] = ""
+            row["over_refusal"] = ""
         row["annotator_id"] = "smoke-test"
         row["adjudication_status"] = "adjudicated"
         row["rationale"] = "Synthetic plumbing assertion; not a research annotation."
@@ -69,6 +80,8 @@ class BenchmarkPipelineTests(unittest.TestCase):
             report["benign_utility"]["paired_defense_effect"]["complete_pairs"],
             4,
         )
+        self.assertEqual(report["benign_utility"]["detailed_composite_overall"]["n"], 8)
+        self.assertTrue(report["privacy_utility_tradeoff"]["available"])
 
     def test_exact_mcnemar_pvalue(self):
         self.assertEqual(exact_mcnemar_pvalue(0, 0), 1.0)
