@@ -44,11 +44,46 @@ def mean_utility(rows: list[dict[str, Any]]) -> dict[str, Any]:
     return {"n": len(scores), "mean": sum(scores) / len(scores)}
 
 
+def dimension_means(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for field in UTILITY_DIMENSIONS:
+        values = []
+        for row in rows:
+            value = row.get(field)
+            if value in ("0", "1"):
+                values.append(int(value))
+            elif value in (0, 1):
+                values.append(int(value))
+        result[field] = {
+            "n": len(values),
+            "mean": (sum(values) / len(values)) if values else None,
+        }
+    return result
+
+
+def latency_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    values = [
+        float(row["latency_ms"])
+        for row in rows
+        if row.get("latency_ms") is not None
+    ]
+    if not values:
+        return {"n": 0, "mean_ms": None}
+    return {"n": len(values), "mean_ms": sum(values) / len(values)}
+
+
 def utility_by_condition(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         groups[str(row["defense_condition"])].append(row)
-    return {condition: mean_utility(group) for condition, group in sorted(groups.items())}
+    return {
+        condition: {
+            **mean_utility(group),
+            "dimensions": dimension_means(group),
+            "latency": latency_summary(group),
+        }
+        for condition, group in sorted(groups.items())
+    }
 
 
 def privacy_utility_tradeoff(
@@ -78,12 +113,24 @@ def privacy_utility_tradeoff(
     leak_guard = sum(leakage["guardshield-v1"]) / len(leakage["guardshield-v1"])
     util_none = float(utility["none"]["mean"])
     util_guard = float(utility["guardshield-v1"]["mean"])
+    latency_none = utility["none"]["latency"]["mean_ms"]
+    latency_guard = utility["guardshield-v1"]["latency"]["mean_ms"]
     privacy_gain = leak_none - leak_guard
     utility_change = util_guard - util_none
     result: dict[str, Any] = {
         "available": True,
         "leakage_rate": {"none": leak_none, "guardshield-v1": leak_guard},
         "mean_utility": {"none": util_none, "guardshield-v1": util_guard},
+        "dimension_means": {
+            "none": utility["none"]["dimensions"],
+            "guardshield-v1": utility["guardshield-v1"]["dimensions"],
+        },
+        "latency_ms": {"none": latency_none, "guardshield-v1": latency_guard},
+        "latency_change_ms": (
+            latency_guard - latency_none
+            if latency_none is not None and latency_guard is not None
+            else None
+        ),
         "privacy_gain": privacy_gain,
         "utility_change": utility_change,
         "utility_cost": -utility_change,
