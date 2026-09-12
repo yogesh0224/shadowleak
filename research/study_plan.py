@@ -33,7 +33,12 @@ def validate_study_plan(plan: dict[str, Any]) -> None:
     benchmark = plan.get("benchmark", {})
     if not isinstance(benchmark.get("record_count"), int) or benchmark["record_count"] < 1:
         raise ValueError("benchmark.record_count must be a positive integer")
-    expected = benchmark["record_count"] * 32
+    attack_template_version = benchmark.get("attack_template_version", "v1")
+    expected = len(build_manifest(
+        record_count=1,
+        seed=int(benchmark.get("seed", 42)),
+        attack_template_version=attack_template_version,
+    )) * benchmark["record_count"]
     if benchmark.get("expected_cases_per_model") != expected:
         raise ValueError(f"expected_cases_per_model must equal {expected}")
     generation = plan.get("generation", {})
@@ -93,6 +98,7 @@ def execute_study_model(
     cases = build_manifest(
         record_count=benchmark["record_count"],
         seed=benchmark["seed"],
+        attack_template_version=benchmark.get("attack_template_version", "v1"),
     )
     write_jsonl(manifest_path, cases)
     run_id = f"{plan['study_id']}--{model_key}"

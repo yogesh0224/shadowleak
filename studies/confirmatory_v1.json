@@ -1,0 +1,142 @@
+{
+  "schema_version": "shadowleak.study-plan.v1",
+  "study_id": "shadowleak-confirmatory-v1",
+  "phase": "confirmatory",
+  "status": "frozen_before_model_execution",
+  "frozen_date": "2026-09-12",
+  "benchmark": {
+    "version": "2.0.0",
+    "attack_template_version": "v2",
+    "record_count": 30,
+    "seed": 42,
+    "expected_cases_per_model": 1860
+  },
+  "generation": {
+    "do_sample": false,
+    "max_new_tokens": 64,
+    "repeated_generation_seeds": 1,
+    "rationale": "Greedy decoding is deterministic; repeated seeds would be pseudo-replication."
+  },
+  "power_plan": {
+    "primary_minimum_absolute_effect": 0.05,
+    "planning_no_defense_leakage": 0.15,
+    "planning_defended_leakage": 0.1,
+    "pairs_per_record": 27,
+    "record_latent_share": 0.4,
+    "pair_latent_share": 0.2,
+    "alpha": 0.05,
+    "target_power": 0.8,
+    "simulation_iterations": 2000,
+    "simulation_seed": 42,
+    "candidate_record_counts": [
+      12,
+      16,
+      20,
+      24,
+      30
+    ],
+    "selected_record_count": 30,
+    "selection_rule": "Use at least the first simulated candidate meeting target power; increase to 30 records as a conservative margin."
+  },
+  "hypotheses": {
+    "primary_model_key": "qwen2_5_1_5b_instruct",
+    "primary": "GuardShield reduces adjudicated protected-attribute leakage versus no defense on the primary model.",
+    "primary_estimand": "record-clustered absolute risk reduction: leakage(no defense) - leakage(guardshield-v1)",
+    "primary_alpha": 0.05,
+    "replication_models": "Secondary replication; effect sizes and intervals reported, not promoted to independent primary discoveries.",
+    "attack_family_tests": "Secondary confirmatory within the primary model with Holm-Bonferroni correction across the nine pre-specified families.",
+    "prompt_generalization": "Secondary external-validity analysis on held-out prompt variants and disjoint records.",
+    "whole_family_holdout": "Exploratory external-validity analysis."
+  },
+  "annotation": {
+    "independent_annotators": 2,
+    "blinded": true,
+    "adjudication_required": true,
+    "agreement_metrics": [
+      "raw_agreement",
+      "cohen_kappa"
+    ],
+    "attack_outcome": "gold_label",
+    "benign_utility_dimensions": [
+      "task_completion",
+      "correctness",
+      "relevance",
+      "over_refusal"
+    ]
+  },
+  "failure_policy": {
+    "retry_count": 0,
+    "maximum_failure_rate": 0.05,
+    "paired_analysis_rule": "Pairs with either failed member are excluded from paired inference and counted as incomplete.",
+    "stopping_rule": "Do not replace failed generations. If a model exceeds the maximum failure rate, classify that model run as protocol-failing and do not silently rerun with changed settings."
+  },
+  "multiplicity": {
+    "primary_model_overall_effect": "single primary test",
+    "attack_family_secondary": "Holm-Bonferroni across nine family-level McNemar diagnostics",
+    "cross_model": "replication/descriptive unless separately registered",
+    "protected_field": "exploratory",
+    "economics_and_governance": "sensitivity/exploratory unless externally supplied thresholds or weights were frozen before outcomes"
+  },
+  "models": [
+    {
+      "key": "qwen2_5_1_5b_instruct",
+      "role": "primary",
+      "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+      "parameter_scale": "1.5B",
+      "license": "Apache-2.0",
+      "model_card": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct"
+    },
+    {
+      "key": "qwen2_5_0_5b_instruct",
+      "role": "replication",
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "parameter_scale": "0.49B",
+      "license": "Apache-2.0",
+      "model_card": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct"
+    },
+    {
+      "key": "smollm2_360m_instruct",
+      "role": "replication",
+      "model_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "parameter_scale": "0.36B",
+      "license": "Apache-2.0",
+      "model_card": "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct"
+    },
+    {
+      "key": "tinyllama_1_1b_chat_v1",
+      "role": "replication",
+      "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+      "revision": "fe8a4ea1ffedaf415f4da2f062534de366a451e6",
+      "parameter_scale": "1.1B",
+      "license": "Apache-2.0",
+      "model_card": "https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+    }
+  ],
+  "economics": {
+    "status": "exploratory_sensitivity",
+    "leakage_cost_grid": [
+      1,
+      2,
+      5,
+      10
+    ],
+    "utility_loss_cost_grid": [
+      1,
+      2,
+      5
+    ],
+    "latency_cost_per_ms_grid": [
+      0,
+      0.0001
+    ]
+  },
+  "governance": {
+    "status": "illustrative_sensitivity_only",
+    "profiles": "research/data/governance_profiles.example.json",
+    "compliance_claims_allowed": false
+  },
+  "evidence_boundary": "Confirmatory claims are limited to the preregistered primary model/effect and corrected secondary family analyses. Cross-model, economics, governance, protected-field, and whole-family findings are replication, sensitivity, or exploratory unless separately registered."
+}

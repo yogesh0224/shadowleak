@@ -1,0 +1,4 @@
+study_id=shadowleak-confirmatory-v1
+execution_commit=c136f4315ca5c224cc1d4f802750a3baec089a6f
+models=qwen2_5_0_5b_instruct,smollm2_360m_instruct,tinyllama_1_1b_chat_v1
+purpose=execute preregistered replication models with frozen code and plan

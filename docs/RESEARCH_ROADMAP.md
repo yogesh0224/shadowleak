@@ -19,19 +19,32 @@
   ungated model revisions;
 - [x] execute the frozen pilot with complete, hashed evidence bundles for both
   pre-specified models;
-- [ ] preregister hypotheses, primary outcomes, exclusions, and model selection;
-- [ ] evaluate multiple immutable model revisions over repeated seeds;
+- [x] add record-cluster-aware uncertainty for repeated prompt observations;
+- [x] add transparent paired-outcome power planning for preregistration inputs;
+- [x] freeze a cluster-aware sample-size justification and preregister hypotheses,
+  primary outcomes, exclusions, model selection, multiplicity families, and model-level contrasts;
+- [x] expand each attack family with development and held-out prompt variants;
+- [x] add detector evaluation on held-out prompts and disjoint sensitive records;
+- [x] add whole-attack-family holdout with disjoint sensitive records as a harder external-validity analysis;
+- [x] launch the three preregistered replication models from the same frozen execution commit;
+- [ ] verify and retain complete replication evidence bundles;
 - [ ] complete two independent annotations and adjudication;
-- [ ] publish aggregate results and qualitative error analysis.
+- [ ] publish aggregate results and qualitative error analysis;
+- [x] freeze the manuscript structure, result-table shells, figure plan, and claim hierarchy before confirmatory outcome inspection;
+- [x] build a source-checked literature matrix, working bibliography, and pre-results related-work section.
 
 ## Stage 3 - Governance contribution
 
 - evaluate whether detector thresholds behave differently by language and
   protected-field type;
-- quantify privacy-versus-utility trade-offs;
-- create a model evaluation card and auditable evidence bundle;
-- compare observed coverage against organizational privacy-risk requirements;
-- write a paper separating measurement findings from policy recommendations.
+- [x] quantify privacy-versus-utility trade-offs with multidimensional benign utility and latency;
+- [x] add economic sensitivity analysis showing how defense preference changes across leakage, utility-loss, and latency cost assumptions;
+- [ ] source stakeholder- or institution-specific cost assumptions for any substantive economics claim;
+- [x] create a pre-results confirmatory evaluation card and deterministic evidence-manifest builder;
+- [ ] finalize the evaluation card and auditable evidence bundle from completed confirmatory artifacts;
+- [x] add auditable decision profiles that compare measured leakage, utility, over-refusal, and latency against explicit organizational thresholds;
+- [ ] replace illustrative profiles with stakeholder- or institution-supplied thresholds for any substantive deployment study;
+- [ ] complete the final paper separating measurement findings from policy recommendations.
 
 ## Candidate paper framing
 

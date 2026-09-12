@@ -1,0 +1,46 @@
+name: confirmatory-v1-primary
+
+on:
+  push:
+    branches:
+      - codex/confirmatory-study-design
+    paths:
+      - studies/run_confirmatory_v1_primary.trigger
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  primary:
+    name: qwen2_5_1_5b_instruct
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      HF_HOME: /tmp/shadowleak-huggingface
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-pilot.txt
+      - name: Install pinned model dependencies
+        run: pip install -r requirements-pilot.txt
+      - name: Validate frozen confirmatory study plan
+        run: python -m research.study_plan --plan studies/confirmatory_v1.json --validate-only
+      - name: Execute frozen primary confirmatory model
+        run: >-
+          python -m research.study_plan
+          --plan studies/confirmatory_v1.json
+          --model-key qwen2_5_1_5b_instruct
+          --output-directory artifacts/qwen2_5_1_5b_instruct
+      - name: Upload auditable confirmatory artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: shadowleak-confirmatory-v1-qwen2_5_1_5b_instruct
+          path: artifacts/qwen2_5_1_5b_instruct/
+          if-no-files-found: warn
+          retention-days: 30

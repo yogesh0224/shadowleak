@@ -26,16 +26,26 @@ after inspecting outcomes.
 - Access mode and hardware:
 - Decoding configuration:
 - Records, templates, attack families, benign tasks, and repeated seeds:
+- Minimum effect of interest and rationale:
+- Assumed prevented/induced discordant-pair probabilities:
+- Alpha and target power:
+- Preliminary matched-pair requirement from `research.power_analysis`:
+- Planned number of independent synthetic records:
 - Planned number of successful matched pairs per model:
+- Clustering inflation or simulation used to justify the final record count:
 
 ## Outcomes
 
 - Primary outcome: adjudicated binary protected-attribute leakage.
 - Primary estimand: matched absolute risk reduction from `none` to
   `guardshield-v1`.
-- Primary test: exact two-sided McNemar test over discordant attack pairs.
-- Secondary outcomes: leakage by pre-specified family/field, leak-type counts,
-  benign utility preservation, latency, and model-failure rate.
+- Primary uncertainty analysis: record-cluster percentile bootstrap for the
+  matched absolute risk reduction, resampling whole `record_id` clusters.
+- Paired diagnostic: exact two-sided McNemar test over discordant attack pairs;
+  do not interpret it as independent-row evidence when records contribute
+  repeated prompt pairs.
+- Secondary outcomes: leakage by pre-specified family/field, leak-type counts, benign utility preservation, task completion, correctness, relevance, over-refusal, composite utility, latency, and model-failure rate.
+- Privacy-utility analysis: pre-specify whether the composite is descriptive only or whether any weighted decision rule will be used. Any welfare weights must be frozen before outcome inspection.
 
 ## Annotation plan
 
@@ -45,6 +55,8 @@ after inspecting outcomes.
 - Agreement statistic: raw agreement and Cohen's kappa before adjudication.
 - Rule for exact, partial, semantic, inferred, and non-leak labels:
 - Rule for benign utility preservation:
+- Rules for task completion, correctness, relevance, and over-refusal:
+- Whether utility dimensions are independently double-annotated and adjudicated:
 
 ## Exclusions and missingness
 
@@ -60,12 +72,47 @@ after inspecting outcomes.
 
 - Report every rate with numerator, denominator, and 95% Wilson interval.
 - Report both condition rates, paired absolute difference, discordant counts,
-  and exact McNemar p-value.
+  and exact McNemar p-value as a paired diagnostic.
+- Report the record-cluster bootstrap estimate, number of independent record
+  clusters, bootstrap seed/iterations, and 95% interval for the primary defense
+  estimand.
 - Family and protected-field analyses are:
   confirmatory / exploratory (choose and specify multiplicity treatment).
-- Multiple-comparison correction, if applicable:
+- Multiple-comparison correction: Holm-Bonferroni across pre-specified attack-family McNemar tests when those tests are confirmatory.
+- Define separate multiplicity families for protected-field, cross-model, or other confirmatory secondary contrasts; otherwise label them exploratory:
+- Whole-attack-family holdout analysis: confirmatory secondary / exploratory (choose one).
+- Record-disjoint rule for whole-family holdout:
 - Sensitivity analyses:
 - No post-hoc prompt or threshold changes will be described as confirmatory.
+
+## Economic sensitivity analysis
+
+- Leakage-cost weight grid and rationale:
+- Utility-loss-cost weight grid and rationale:
+- Latency-cost weight grid and rationale:
+- Source of stakeholder or institutional weights, if any:
+- Whether weights were fixed before outcome inspection: yes / no
+- Primary comparison: configuration preferred under each pre-specified weight vector.
+- Reporting rule: show the full sensitivity grid or decision regions, not only
+  the weight vector that favors the preferred narrative.
+
+Treat post-hoc weights as exploratory.
+
+## Governance decision rule
+
+- Deployment context:
+- Decision-profile file and version:
+- Profile status: illustrative / organizational / regulatory-derived:
+- Maximum acceptable leakage rate:
+- Minimum acceptable benign utility:
+- Maximum acceptable over-refusal:
+- Maximum acceptable latency, if used:
+- Source and accountable owner for each threshold:
+- Decision rule frozen before outcome inspection: yes / no
+- Statement explaining why a threshold is appropriate for this deployment:
+
+Do not label an illustrative threshold as a legal requirement or compliance
+standard.
 
 ## Ethics, release, and dual use
 

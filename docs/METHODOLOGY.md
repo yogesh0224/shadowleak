@@ -36,26 +36,46 @@ creating matched pairs. Pair IDs support within-case comparison; record IDs
 support grouped validation and prevent related observations crossing train/test
 boundaries.
 
-Version 1 is a single-turn benchmark. The `multi_turn_setup` family tests a
-conversation-scaffolding request inside one prompt; it is not evidence about a
-stateful multi-turn system. A genuine conversational adapter is future work.
+Version 1 is preserved for the frozen feasibility pilot. Benchmark v2 expands
+each of the nine attack families to three controlled prompt variants: two
+`development` variants and one pre-designated `heldout` variant. This supports
+a stronger generalization question than template-level averages alone.
+
+For detector generalization, held-out prompts are evaluated on sensitive records
+that are also absent from detector training. This avoids a weaker design in
+which the wording is unseen but record-specific signals have already appeared
+in training. The v2 generalization protocol therefore tests both unseen prompt
+variants and unseen sensitive records.
+
+Both v1 and v2 remain single-turn benchmarks. The `multi_turn_setup` family
+tests a conversation-scaffolding request inside one prompt; it is not evidence
+about a stateful multi-turn system. A genuine conversational adapter is future
+work.
 
 ## Outcomes
 
 1. Gold leakage rate, overall and by attack family.
 2. Detector precision, recall, false-positive rate, F1, and ROC AUC.
 3. Defense effect on leakage rate.
-4. Utility retained after defense, measured on a separate benign-task set.
+4. Utility retained after defense, measured on a separate benign-task set using task completion, correctness, relevance, and over-refusal.
 5. Latency and computational cost where relevant.
+6. Privacy-utility trade-off: leakage reduction relative to benign utility change, reported descriptively rather than collapsed into an unregistered welfare score.
 
-Rates must include denominators and uncertainty intervals. A lower leakage rate
-is not sufficient evidence of a better defense if benign-task utility collapses.
+Rates must include denominators and uncertainty intervals. A lower leakage rate is not sufficient evidence of a better defense if benign-task utility collapses. Detailed benign utility uses an equal-weight 0-1 composite of task completion, correctness, relevance, and reversed over-refusal, while also reporting each dimension separately and latency by defense condition. The equal weighting is a transparent measurement convention, not a claim that all dimensions have equal economic or social value.
 
 The primary defense estimand is the matched absolute risk reduction: leakage
-rate without defense minus leakage rate with defense. The exact two-sided
-McNemar test uses only discordant pairs. Benign-task utility is analyzed with
-the same paired structure. Wilson intervals are reported for individual rates;
-they are not misrepresented as confidence intervals for the paired difference.
+rate without defense minus leakage rate with defense. Because each synthetic
+record contributes repeated prompt observations, prompt rows are not treated as
+independent experimental units. Primary uncertainty for the defense effect is
+therefore estimated by a percentile bootstrap that resamples whole `record_id`
+clusters and preserves every repeated observation within each sampled record.
+
+The exact two-sided McNemar statistic over prompt-level matched pairs is retained
+as a descriptive paired diagnostic, not as the sole confirmatory inferential
+claim, because repeated pairs from the same record can be correlated. Benign-task
+utility uses the same matched design. Wilson intervals are reported for
+individual rates; they are not misrepresented as confidence intervals for the
+paired difference.
 
 ## Ground truth
 
@@ -68,8 +88,10 @@ requires blinded human review.
 
 All responses associated with one sensitive record remain in the same fold.
 This prevents a classifier from learning record-specific strings in training
-and receiving related strings in testing. For a template-generalization claim,
-hold out attack templates or entire attack families as an additional analysis.
+and receiving related strings in testing. For a template-generalization claim, use the pre-designated v2 held-out prompt
+variants and keep test records disjoint from training records. Whole-family
+holdout remains an additional, harder external-validity analysis rather than a
+claim implied by the current v2 design.
 
 ## Reproducibility
 
@@ -90,9 +112,58 @@ The frozen feasibility pilot is documented in `PILOT_PROTOCOL_V1.md` and
 its only role is to identify execution or artifact defects before a separately
 registered, adequately sized study.
 
+Before freezing the confirmatory study, sample size must be justified from a
+pre-specified minimum effect and expected discordant-pair probabilities. The
+`research.power_analysis` utility provides a transparent asymptotic McNemar
+planning calculation. Because that calculation assumes independent matched
+pairs, its result is a lower-bound planning input for this repeated-record
+design; the final preregistration must additionally justify record count and any
+inflation or simulation used to account for within-record dependence.
+
 ## Current evidence boundary
 
 ShadowLeak is a research prototype with benchmark infrastructure. The
 repository does not yet contain a large, independently annotated, multi-model
 result set. Until that study is run, do not claim that one attack family is
 highest-risk or that hybrid detection improves coverage.
+
+
+## Economic sensitivity analysis
+
+ShadowLeak can translate measured leakage, benign utility, and latency into a
+transparent cost comparison across defense configurations. For one explicit
+weight vector, normalized total cost is:
+
+`leakage_cost * leakage_rate + utility_loss_cost * (1 - utility) + latency_cost_per_ms * latency_ms`.
+
+The weights are preference parameters supplied by analysts, institutions, or
+stakeholders. They are not market prices, welfare estimates, or objectively
+correct social values. The intended analysis is therefore a sensitivity grid:
+report which configuration is preferred across many pre-specified weight
+combinations and identify regions where the preferred decision changes.
+
+A substantive study should preregister the weight grid or document the external
+source of institution-specific weights before inspecting benchmark outcomes.
+Post-hoc weights may be used only for exploratory sensitivity analysis.
+
+
+## Whole-attack-family generalization
+
+In addition to held-out prompt variants, detector external validity can be
+evaluated with leave-one-attack-family-out folds. Each fold trains on all other
+attack families using one subset of sensitive records and evaluates on the
+held-out attack family using a disjoint record subset. This is intentionally
+harder than template holdout and should be reported as an external-validity
+analysis rather than substituted for the primary benchmark estimand.
+
+## Multiplicity
+
+The primary confirmatory defense effect is the overall matched leakage
+difference. Attack-family-specific McNemar tests form a secondary hypothesis
+family. When these family tests are treated as confirmatory, ShadowLeak reports
+Holm-Bonferroni adjusted p-values across the pre-specified attack families.
+Unadjusted subgroup p-values must not be selectively highlighted.
+
+Protected-field, model-by-family, economic-weight, governance-profile, and other
+secondary contrasts require their own pre-specified multiplicity family or must
+be labeled exploratory.

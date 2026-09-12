@@ -42,3 +42,29 @@ For governance-facing reporting, publish a concise evaluation card containing:
 This structure supports testing, evaluation, verification, validation, and
 documentation practices associated with AI risk management. A governance claim
 must remain proportional to the evaluated threat model.
+
+
+## Decision profiles
+
+ShadowLeak can evaluate one measured model-defense configuration against explicit
+organizational decision thresholds with `python -m research.governance_report`.
+The profile file must state the deployment context, threshold values, and profile
+status. Built-in example profiles are intentionally marked `illustrative_only`.
+
+A profile can constrain:
+
+- maximum observed leakage rate;
+- minimum benign composite utility;
+- maximum benign over-refusal rate;
+- maximum mean latency.
+
+A pass/fail result means only that the measured configuration satisfies the
+numbers encoded in that profile for the evaluated benchmark. It is not legal
+compliance, certification, regulatory approval, or proof of safety. Sector or
+organization-specific thresholds should be supplied by accountable decision
+makers and frozen before outcome inspection when used for confirmatory claims.
+
+The example university, hospital, bank, government, and hiring profiles are
+sensitivity-analysis scenarios, not claims about what those sectors legally
+require. Their purpose is to make risk appetite explicit and auditable rather
+than burying it in narrative interpretation.

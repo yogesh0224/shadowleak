@@ -10,8 +10,11 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from research.inference import cluster_bootstrap_paired_difference
 from research.io import read_jsonl
 from research.metrics import wilson_interval
+from research.multiplicity import adjust_named_pvalues
+from research.utility import mean_utility, privacy_utility_tradeoff, utility_by_condition
 
 LEAK_TYPES = {"exact", "partial", "semantic", "inferred", "none"}
 
@@ -39,6 +42,13 @@ def read_annotations(
             raise ValueError(f"Row {line} is not adjudicated")
         if row.get("task_type") == "benign" and row.get("utility_preserved") not in {"0", "1"}:
             raise ValueError(f"utility_preserved must be 0 or 1 for benign row {line}")
+        if row.get("task_type") == "benign":
+            detailed_fields = ("task_completion", "correctness", "relevance", "over_refusal")
+            detailed_values = [row.get(field, "").strip() for field in detailed_fields]
+            if any(detailed_values) and any(value not in {"0", "1"} for value in detailed_values):
+                raise ValueError(
+                    f"Detailed utility fields must all be 0 or 1 when supplied on line {line}"
+                )
     return rows
 
 
@@ -158,6 +168,29 @@ def paired_effect(
     return result
 
 
+def paired_effect_by_group(
+    rows: list[dict[str, Any]],
+    group_field: str,
+    outcome_field: str,
+    positive_is_harm: bool,
+) -> dict[str, dict[str, Any]]:
+    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        groups[str(row[group_field])].append(row)
+    effects = {
+        group: paired_effect(group_rows, outcome_field, positive_is_harm)
+        for group, group_rows in sorted(groups.items())
+    }
+    named_pvalues = {
+        group: effect["exact_mcnemar_pvalue"]
+        for group, effect in effects.items()
+    }
+    adjusted = adjust_named_pvalues(named_pvalues, method="holm")
+    for group in effects:
+        effects[group]["holm_adjusted_mcnemar_pvalue"] = adjusted[group]["adjusted_pvalue"]
+    return effects
+
+
 def inter_annotator_agreement(
     annotator_a: list[dict[str, str]], annotator_b: list[dict[str, str]]
 ) -> dict[str, Any]:
@@ -225,6 +258,10 @@ def analyze(
                     if annotation.get("utility_preserved") in {"0", "1"}
                     else None
                 ),
+                "task_completion": annotation.get("task_completion", ""),
+                "correctness": annotation.get("correctness", ""),
+                "relevance": annotation.get("relevance", ""),
+                "over_refusal": annotation.get("over_refusal", ""),
             }
         )
 
@@ -258,6 +295,9 @@ def analyze(
             "overall": _rate(attack_rows, "gold_label"),
             "by_defense": _group_rates(attack_rows, "defense_condition", "gold_label"),
             "by_attack_family": _group_rates(attack_rows, "attack_family", "gold_label"),
+            "by_generalization_split": _group_rates(
+                attack_rows, "generalization_split", "gold_label"
+            ) if all("generalization_split" in row for row in attack_rows) else {},
             "by_target_field": _group_rates(attack_rows, "target_field", "gold_label"),
             "by_attack_family_and_defense": _cross_group_rates(
                 attack_rows, "attack_family", "defense_condition", "gold_label"
@@ -269,15 +309,38 @@ def analyze(
                 attack_rows, "defense_condition", "leak_type"
             ),
             "paired_defense_effect": paired_effect(attack_rows, "gold_label", True),
+            "paired_defense_effect_by_attack_family": paired_effect_by_group(
+                attack_rows, "attack_family", "gold_label", True
+            ),
+            "multiplicity_method": "holm_bonferroni_for_attack_family_mcnemar_tests",
+            "record_clustered_defense_effect": (
+                cluster_bootstrap_paired_difference(
+                    attack_rows,
+                    outcome_field="gold_label",
+                    cluster_field="record_id",
+                    iterations=5000,
+                    seed=42,
+                )
+                if len({str(row["record_id"]) for row in attack_rows}) >= 2
+                else {
+                    "method": "record_cluster_percentile_bootstrap",
+                    "available": False,
+                    "reason": "At least two record_id clusters are required.",
+                    "clusters": len({str(row["record_id"]) for row in attack_rows}),
+                }
+            ),
         },
         "benign_utility": {
             "overall": _rate(benign_rows, "utility_preserved"),
+            "detailed_composite_overall": mean_utility(benign_rows),
+            "detailed_composite_by_defense": utility_by_condition(benign_rows),
             "by_defense": _group_rates(benign_rows, "defense_condition", "utility_preserved"),
             "by_template_and_defense": _cross_group_rates(
                 benign_rows, "template_id", "defense_condition", "utility_preserved"
             ),
             "paired_defense_effect": paired_effect(benign_rows, "utility_preserved", False),
         },
+        "privacy_utility_tradeoff": privacy_utility_tradeoff(attack_rows, benign_rows),
     }
     if agreement is not None:
         report["inter_annotator_agreement"] = agreement
