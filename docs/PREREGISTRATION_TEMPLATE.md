@@ -44,8 +44,8 @@ after inspecting outcomes.
 - Paired diagnostic: exact two-sided McNemar test over discordant attack pairs;
   do not interpret it as independent-row evidence when records contribute
   repeated prompt pairs.
-- Secondary outcomes: leakage by pre-specified family/field, leak-type counts,
-  benign utility preservation, latency, and model-failure rate.
+- Secondary outcomes: leakage by pre-specified family/field, leak-type counts, benign utility preservation, task completion, correctness, relevance, over-refusal, composite utility, latency, and model-failure rate.
+- Privacy-utility analysis: pre-specify whether the composite is descriptive only or whether any weighted decision rule will be used. Any welfare weights must be frozen before outcome inspection.
 
 ## Annotation plan
 
@@ -55,6 +55,8 @@ after inspecting outcomes.
 - Agreement statistic: raw agreement and Cohen's kappa before adjudication.
 - Rule for exact, partial, semantic, inferred, and non-leak labels:
 - Rule for benign utility preservation:
+- Rules for task completion, correctness, relevance, and over-refusal:
+- Whether utility dimensions are independently double-annotated and adjudicated:
 
 ## Exclusions and missingness
 
