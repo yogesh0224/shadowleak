@@ -6,7 +6,6 @@ on:
       - codex/research-evaluation-v1
     paths:
       - studies/run_pilot_v1.trigger
-      - .github/workflows/open-model-pilot.yml
   workflow_dispatch:
 
 permissions:
@@ -27,8 +26,8 @@ jobs:
       HF_HOME: /tmp/shadowleak-huggingface
       TOKENIZERS_PARALLELISM: "false"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -45,7 +44,7 @@ jobs:
           --output-directory artifacts/${{ matrix.model_key }}
       - name: Upload auditable pilot artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: shadowleak-pilot-v1-${{ matrix.model_key }}
           path: artifacts/${{ matrix.model_key }}/

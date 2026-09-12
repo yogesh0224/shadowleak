@@ -17,6 +17,8 @@
   inter-annotator agreement;
 - [x] freeze and automate a two-model feasibility pilot using immutable,
   ungated model revisions;
+- [x] execute the frozen pilot with complete, hashed evidence bundles for both
+  pre-specified models;
 - [ ] preregister hypotheses, primary outcomes, exclusions, and model selection;
 - [ ] evaluate multiple immutable model revisions over repeated seeds;
 - [ ] complete two independent annotations and adjudication;
