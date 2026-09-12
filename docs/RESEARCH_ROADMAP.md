@@ -10,12 +10,15 @@
 
 ## Stage 2 - Publishable benchmark
 
-- generate at least 100 synthetic canary records without real personal data;
-- preregister attack families, primary outcomes, exclusions, and statistics;
-- evaluate multiple openly identified model revisions;
-- run repeated seeds and balanced defended/undefended conditions;
-- use two blinded annotators for non-exact disclosures;
-- publish aggregate results, uncertainty intervals, and error analysis.
+- [x] generate a versioned 100-record synthetic benchmark without real personal data;
+- [x] balance matched defended/undefended attack and benign cases;
+- [x] implement blinded queues, a separate case key, and adjudication checks;
+- [x] implement Wilson intervals, exact McNemar tests, failure accounting, and
+  inter-annotator agreement;
+- [ ] preregister hypotheses, primary outcomes, exclusions, and model selection;
+- [ ] evaluate multiple immutable model revisions over repeated seeds;
+- [ ] complete two independent annotations and adjudication;
+- [ ] publish aggregate results and qualitative error analysis.
 
 ## Stage 3 - Governance contribution
 
@@ -33,4 +36,3 @@ Language-Model Systems**
 
 The contribution should be the evaluation protocol and evidence quality, not a
 new dashboard or an unsupported claim that one detector solves privacy leakage.
-

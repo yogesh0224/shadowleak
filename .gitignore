@@ -26,5 +26,6 @@ ml_detector/model_artifacts/
 
 # Private or generated research data
 data/private/
+artifacts/
 reports/*.json
 gold_annotations.local.csv

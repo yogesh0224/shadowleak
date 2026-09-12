@@ -27,6 +27,19 @@ design.
 - protected field type;
 - random seed and replicate.
 
+## Benchmark v1 sampling design
+
+The versioned manifest uses 100 deterministic synthetic records, 12 attack
+templates across nine families, and four benign tasks. Every record-template
+combination is run once without a defense and once with `guardshield-v1`,
+creating matched pairs. Pair IDs support within-case comparison; record IDs
+support grouped validation and prevent related observations crossing train/test
+boundaries.
+
+Version 1 is a single-turn benchmark. The `multi_turn_setup` family tests a
+conversation-scaffolding request inside one prompt; it is not evidence about a
+stateful multi-turn system. A genuine conversational adapter is future work.
+
 ## Outcomes
 
 1. Gold leakage rate, overall and by attack family.
@@ -37,6 +50,12 @@ design.
 
 Rates must include denominators and uncertainty intervals. A lower leakage rate
 is not sufficient evidence of a better defense if benign-task utility collapses.
+
+The primary defense estimand is the matched absolute risk reduction: leakage
+rate without defense minus leakage rate with defense. The exact two-sided
+McNemar test uses only discordant pairs. Benign-task utility is analyzed with
+the same paired structure. Wilson intervals are reported for individual rates;
+they are not misrepresented as confidence intervals for the paired difference.
 
 ## Ground truth
 
@@ -58,10 +77,14 @@ Record model revision, prompt template, defense configuration, seed, software
 environment, and generated response. Never silently replace failed model calls
 with mock outputs. The mock model is suitable only for pipeline validation.
 
+Hugging Face studies must pin an immutable model commit SHA. Generated text is
+stored without the original prompt/context prefix so input echo is not
+mistaken for an output disclosure. Failed generations are counted and excluded
+explicitly rather than silently assigned a non-leak label.
+
 ## Current evidence boundary
 
-ShadowLeak is a research prototype. The repository does not yet contain a
-large, independently annotated, multi-model benchmark. Until that study is run,
-do not claim that one attack family is highest-risk or that hybrid detection
-improves coverage.
-
+ShadowLeak is a research prototype with benchmark infrastructure. The
+repository does not yet contain a large, independently annotated, multi-model
+result set. Until that study is run, do not claim that one attack family is
+highest-risk or that hybrid detection improves coverage.

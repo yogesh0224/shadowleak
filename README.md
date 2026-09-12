@@ -56,24 +56,87 @@ See:
 - [Gold annotation guide](docs/ANNOTATION_GUIDE.md)
 - [Governance mapping](docs/GOVERNANCE_MAPPING.md)
 - [Research roadmap](docs/RESEARCH_ROADMAP.md)
+- [Evaluation card template](docs/EVALUATION_CARD_TEMPLATE.md)
+- [Preregistration template](docs/PREREGISTRATION_TEMPLATE.md)
+
+## Benchmark v1 design
+
+The default manifest contains 3,200 cases built from 100 visibly synthetic
+identities. Each identity is evaluated against 12 attack templates and four
+benign controls in matched `none` and `guardshield-v1` conditions.
+
+| Layer | Evidence retained |
+|---|---|
+| Manifest | Case/pair/record IDs, prompt and template versions, target field, seed |
+| Execution | Exact model revision, manifest hash, final response, latency, failure and defense actions |
+| Annotation | Randomized blinded queue; case and condition key stored separately |
+| Analysis | Wilson intervals, matched defense effect, exact McNemar test, utility and exclusions |
 
 ## System components
 
-```text
-Synthetic canary records
-        ↓
-Versioned adversarial prompts
-        ↓
-Model interface (mock or identified Hugging Face revision)
-        ↓
-Stored responses ──→ blinded gold annotation
-        ↓                         ↓
-Rule/semantic predictions     independent labels
-        └──────────────┬──────────┘
-                       ↓
-             grouped detector evaluation
-                       ↓
-          reproducible report + governance card
+```mermaid
+flowchart TD
+    A["Synthetic canaries + versioned prompts"] --> B["Paired model runs"]
+    B --> C["Blinded human annotation"]
+    B --> D["Automated detector predictions"]
+    C --> E["Independent gold labels"]
+    D --> F["Grouped detector evaluation"]
+    E --> F
+    E --> G["Paired defense + utility analysis"]
+    F --> H["Evaluation card"]
+    G --> H
+```
+
+## Run the standalone benchmark
+
+Generate the full paired manifest:
+
+```bash
+python -m research.benchmark_manifest \
+  --records 100 --seed 42 \
+  --output artifacts/benchmark_manifest_v1.jsonl
+```
+
+Smoke-test the pipeline without making empirical claims:
+
+```bash
+python -m research.run_benchmark \
+  --manifest artifacts/benchmark_manifest_v1.jsonl \
+  --model mock --seed 42 \
+  --output artifacts/mock_responses_v1.jsonl
+```
+
+For a real local Hugging Face run, pin the model to an immutable 40-character
+commit SHA. This avoids a moving model revision and excludes the input context
+from returned generated text:
+
+```bash
+python -m research.run_benchmark \
+  --manifest artifacts/benchmark_manifest_v1.jsonl \
+  --model hf --model-id ORGANIZATION/MODEL \
+  --model-revision 40_CHARACTER_COMMIT_SHA \
+  --output artifacts/model_responses_v1.jsonl
+```
+
+Create the blinded queue and separate re-identification key:
+
+```bash
+python -m research.annotation_queue \
+  --responses artifacts/model_responses_v1.jsonl \
+  --queue artifacts/annotation_queue.csv \
+  --key artifacts/annotation_key.jsonl --seed 42
+```
+
+After two independent passes and adjudication, generate the report:
+
+```bash
+python -m research.benchmark_analysis \
+  --responses artifacts/model_responses_v1.jsonl \
+  --key artifacts/annotation_key.jsonl \
+  --annotations artifacts/adjudicated_annotations.csv \
+  --annotator-a artifacts/annotator_a.csv \
+  --annotator-b artifacts/annotator_b.csv \
+  --output artifacts/benchmark_report.json
 ```
 
 ## Reproduce validation tests
@@ -118,11 +181,12 @@ Responses without independent labels are never silently treated as non-leaks.
 
 ## Current evidence boundary
 
-ShadowLeak is not yet a publishable benchmark. The repository now enforces a
-valid evaluation protocol, deterministic mock experiments, truthful summary
-rates, and automated tests, but a multi-model independently annotated study has
-not yet been completed. Claims about the highest-risk attack family or the
-superiority of hybrid detection would be premature.
+ShadowLeak now provides benchmark infrastructure, not benchmark findings. It
+enforces deterministic paired manifests, model provenance, blinded annotation,
+matched statistical analysis, truthful summary rates, and automated tests. A
+multi-model independently annotated study has not yet been completed. Claims
+about the highest-risk attack family, real-world model leakage, or defense
+superiority would therefore be premature.
 
 ## Data ethics
 

@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use ShadowLeak, cite this software and the exact commit evaluated."
+title: "ShadowLeak: Reproducible Privacy-Leakage Evaluation for Language-Model Systems"
+type: software
+authors:
+  - family-names: Luitel
+    given-names: Yogesh
+repository-code: "https://github.com/yogesh0224/shadowleak"
