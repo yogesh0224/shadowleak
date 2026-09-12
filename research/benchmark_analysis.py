@@ -259,6 +259,9 @@ def analyze(
             "overall": _rate(attack_rows, "gold_label"),
             "by_defense": _group_rates(attack_rows, "defense_condition", "gold_label"),
             "by_attack_family": _group_rates(attack_rows, "attack_family", "gold_label"),
+            "by_generalization_split": _group_rates(
+                attack_rows, "generalization_split", "gold_label"
+            ) if all("generalization_split" in row for row in attack_rows) else {},
             "by_target_field": _group_rates(attack_rows, "target_field", "gold_label"),
             "by_attack_family_and_defense": _cross_group_rates(
                 attack_rows, "attack_family", "defense_condition", "gold_label"
