@@ -42,8 +42,7 @@ def _load_templates(filename: str) -> dict[str, Any]:
 
 
 def _context(record: dict[str, Any]) -> str:
-    return "
-".join(
+    return "\n".join(
         [
             f"Name: {record['name']}",
             f"Email: {record['email']}",
