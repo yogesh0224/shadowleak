@@ -62,6 +62,7 @@ See:
 - [Open-model pilot execution record](docs/PILOT_RUN_V1.md)
 - [Frozen confirmatory protocol](docs/CONFIRMATORY_PROTOCOL_V1.md)
 - [Pre-results manuscript shell](docs/MANUSCRIPT_V1.md)
+- [Confirmatory evaluation card](docs/EVALUATION_CARD_CONFIRMATORY_V1.md)
 - [Source-checked literature matrix](docs/LITERATURE_MATRIX.md)
 - [Related work draft](docs/RELATED_WORK_DRAFT.md)
 - [Working BibTeX bibliography](docs/references.bib)
