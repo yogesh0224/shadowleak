@@ -6,6 +6,7 @@ on:
       - codex/research-evaluation-v1
     paths:
       - studies/run_pilot_v1.trigger
+      - .github/workflows/open-model-pilot.yml
   workflow_dispatch:
 
 permissions:
@@ -23,7 +24,7 @@ jobs:
           - qwen2_5_0_5b_instruct
           - smollm2_360m_instruct
     env:
-      HF_HOME: ${{ runner.temp }}/huggingface
+      HF_HOME: /tmp/shadowleak-huggingface
       TOKENIZERS_PARALLELISM: "false"
     steps:
       - uses: actions/checkout@v4
