@@ -34,7 +34,7 @@
 
 - evaluate whether detector thresholds behave differently by language and
   protected-field type;
-- quantify privacy-versus-utility trade-offs;
+- [x] quantify privacy-versus-utility trade-offs with multidimensional benign utility and latency;
 - create a model evaluation card and auditable evidence bundle;
 - compare observed coverage against organizational privacy-risk requirements;
 - write a paper separating measurement findings from policy recommendations.
