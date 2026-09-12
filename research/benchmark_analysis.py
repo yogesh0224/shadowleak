@@ -10,6 +10,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from research.inference import cluster_bootstrap_paired_difference
 from research.io import read_jsonl
 from research.metrics import wilson_interval
 
@@ -269,6 +270,13 @@ def analyze(
                 attack_rows, "defense_condition", "leak_type"
             ),
             "paired_defense_effect": paired_effect(attack_rows, "gold_label", True),
+            "record_clustered_defense_effect": cluster_bootstrap_paired_difference(
+                attack_rows,
+                outcome_field="gold_label",
+                cluster_field="record_id",
+                iterations=5000,
+                seed=42,
+            ),
         },
         "benign_utility": {
             "overall": _rate(benign_rows, "utility_preserved"),
