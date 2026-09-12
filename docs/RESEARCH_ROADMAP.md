@@ -28,7 +28,8 @@
 - [x] add whole-attack-family holdout with disjoint sensitive records as a harder external-validity analysis;
 - [ ] evaluate multiple immutable model revisions over repeated seeds;
 - [ ] complete two independent annotations and adjudication;
-- [ ] publish aggregate results and qualitative error analysis.
+- [ ] publish aggregate results and qualitative error analysis;
+- [x] freeze the manuscript structure, result-table shells, figure plan, and claim hierarchy before confirmatory outcome inspection.
 
 ## Stage 3 - Governance contribution
 
@@ -40,7 +41,7 @@
 - create a model evaluation card and auditable evidence bundle;
 - [x] add auditable decision profiles that compare measured leakage, utility, over-refusal, and latency against explicit organizational thresholds;
 - [ ] replace illustrative profiles with stakeholder- or institution-supplied thresholds for any substantive deployment study;
-- write a paper separating measurement findings from policy recommendations.
+- [ ] complete the final paper separating measurement findings from policy recommendations.
 
 ## Candidate paper framing
 
