@@ -52,10 +52,18 @@ Rates must include denominators and uncertainty intervals. A lower leakage rate
 is not sufficient evidence of a better defense if benign-task utility collapses.
 
 The primary defense estimand is the matched absolute risk reduction: leakage
-rate without defense minus leakage rate with defense. The exact two-sided
-McNemar test uses only discordant pairs. Benign-task utility is analyzed with
-the same paired structure. Wilson intervals are reported for individual rates;
-they are not misrepresented as confidence intervals for the paired difference.
+rate without defense minus leakage rate with defense. Because each synthetic
+record contributes repeated prompt observations, prompt rows are not treated as
+independent experimental units. Primary uncertainty for the defense effect is
+therefore estimated by a percentile bootstrap that resamples whole `record_id`
+clusters and preserves every repeated observation within each sampled record.
+
+The exact two-sided McNemar statistic over prompt-level matched pairs is retained
+as a descriptive paired diagnostic, not as the sole confirmatory inferential
+claim, because repeated pairs from the same record can be correlated. Benign-task
+utility uses the same matched design. Wilson intervals are reported for
+individual rates; they are not misrepresented as confidence intervals for the
+paired difference.
 
 ## Ground truth
 
@@ -89,6 +97,14 @@ The frozen feasibility pilot is documented in `PILOT_PROTOCOL_V1.md` and
 `studies/pilot_v1.json`. It is deliberately too small for confirmatory claims;
 its only role is to identify execution or artifact defects before a separately
 registered, adequately sized study.
+
+Before freezing the confirmatory study, sample size must be justified from a
+pre-specified minimum effect and expected discordant-pair probabilities. The
+`research.power_analysis` utility provides a transparent asymptotic McNemar
+planning calculation. Because that calculation assumes independent matched
+pairs, its result is a lower-bound planning input for this repeated-record
+design; the final preregistration must additionally justify record count and any
+inflation or simulation used to account for within-record dependence.
 
 ## Current evidence boundary
 
