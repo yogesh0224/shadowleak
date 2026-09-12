@@ -78,7 +78,10 @@ after inspecting outcomes.
   estimand.
 - Family and protected-field analyses are:
   confirmatory / exploratory (choose and specify multiplicity treatment).
-- Multiple-comparison correction, if applicable:
+- Multiple-comparison correction: Holm-Bonferroni across pre-specified attack-family McNemar tests when those tests are confirmatory.
+- Define separate multiplicity families for protected-field, cross-model, or other confirmatory secondary contrasts; otherwise label them exploratory:
+- Whole-attack-family holdout analysis: confirmatory secondary / exploratory (choose one).
+- Record-disjoint rule for whole-family holdout:
 - Sensitivity analyses:
 - No post-hoc prompt or threshold changes will be described as confirmatory.
 
