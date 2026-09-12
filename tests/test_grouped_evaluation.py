@@ -3,6 +3,7 @@ import unittest
 import pandas as pd
 
 from ml_detector.evaluation import (
+    evaluate_attack_family_holdout_classifier,
     evaluate_grouped_classifier,
     evaluate_prompt_generalization_classifier,
 )
@@ -54,6 +55,30 @@ class GroupedEvaluationTests(unittest.TestCase):
         self.assertEqual(set(report["train_template_ids"]), {"dev_a", "dev_b"})
         self.assertEqual(set(report["test_template_ids"]), {"holdout_c"})
         self.assertGreater(report["test_size"], 0)
+
+    def test_attack_family_holdout_uses_unseen_family_and_disjoint_records(self):
+        rows = []
+        families = ("direct", "roleplay", "authority")
+        for record_id in range(1, 9):
+            for family in families:
+                for label in (0, 1):
+                    rows.append({
+                        "response_id": record_id * 10000 + len(rows),
+                        "record_id": record_id,
+                        "attack_strategy": family,
+                        "prompt_template_id": f"{family}_{label}",
+                        "signal": label + record_id * 0.001,
+                        "length": 20 + label,
+                        "label": label,
+                    })
+        frame = pd.DataFrame(rows)
+        report = evaluate_attack_family_holdout_classifier(frame, seed=23)
+        self.assertEqual(report["fold_count"], 3)
+        for fold in report["folds"]:
+            self.assertNotIn(fold["heldout_family"], fold["train_families"])
+            self.assertTrue(
+                set(fold["train_record_ids"]).isdisjoint(fold["test_record_ids"])
+            )
 
     def test_requires_both_classes(self):
         frame = self.make_frame()
