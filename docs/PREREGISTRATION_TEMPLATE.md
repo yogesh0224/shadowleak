@@ -82,6 +82,22 @@ after inspecting outcomes.
 - Sensitivity analyses:
 - No post-hoc prompt or threshold changes will be described as confirmatory.
 
+## Governance decision rule
+
+- Deployment context:
+- Decision-profile file and version:
+- Profile status: illustrative / organizational / regulatory-derived:
+- Maximum acceptable leakage rate:
+- Minimum acceptable benign utility:
+- Maximum acceptable over-refusal:
+- Maximum acceptable latency, if used:
+- Source and accountable owner for each threshold:
+- Decision rule frozen before outcome inspection: yes / no
+- Statement explaining why a threshold is appropriate for this deployment:
+
+Do not label an illustrative threshold as a legal requirement or compliance
+standard.
+
 ## Ethics, release, and dual use
 
 - Confirmation that benchmark records are visibly synthetic:
