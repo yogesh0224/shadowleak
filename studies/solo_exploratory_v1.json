@@ -1,0 +1,64 @@
+{
+  "schema_version": "shadowleak.solo-exploratory-plan.v1",
+  "study_id": "shadowleak-solo-exploratory-v1",
+  "evidence_class": "exploratory_single_investigator_not_original_confirmatory",
+  "status": "prospectively_documented_before_new_model_execution",
+  "prepared_date": "2026-09-19",
+  "protocol": "docs/SOLO_EXPLORATORY_PROTOCOL_V1.md",
+  "original_study_id": "shadowleak-confirmatory-v1",
+  "original_study_outputs_allowed": false,
+  "benchmark": {
+    "benchmark_version": "2.0.0",
+    "attack_template_version": "v2",
+    "benign_template_version": "v1",
+    "seed": 20260919,
+    "record_count": 10,
+    "attack_templates_per_record": 27,
+    "benign_templates_per_record": 4,
+    "defense_conditions": [
+      "none",
+      "guardshield-v1"
+    ],
+    "planned_cases": 620,
+    "planned_attack_cases": 540,
+    "planned_benign_cases": 80,
+    "planned_pairs": 310
+  },
+  "model": {
+    "key": "qwen2_5_1_5b_instruct",
+    "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+    "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "role": "single_pilot_model"
+  },
+  "generation": {
+    "do_sample": false,
+    "max_new_tokens": 64,
+    "selective_reruns": false
+  },
+  "annotation": {
+    "human_annotators": 1,
+    "annotator_role": "sole_investigator",
+    "detector_predictions_hidden_until_label_freeze": true,
+    "condition_mapping_hidden_until_label_freeze": true,
+    "complete_all_successful_rows": true,
+    "independent_double_annotation": false,
+    "adjudicated_human_gold": false
+  },
+  "analysis": {
+    "evidence_class": "exploratory_descriptive",
+    "primary_comparison": "fixed detector outputs versus sole-investigator labels",
+    "report_all_eligible_cases": true,
+    "report_complete_matched_pairs": true,
+    "unit_dependence": "responses are clustered within 10 synthetic records",
+    "registered_primary_significance_test": false,
+    "scope": "single model; synthetic contextual disclosure; four benign tasks"
+  },
+  "limitations": [
+    "Single researcher is also sole human annotator; label reliability across independent reviewers is unknown.",
+    "No independent security or authorization boundary in single-turn model input.",
+    "Only ten synthetic record clusters and one small instruction-tuned model.",
+    "Synthetic records share some attribute values with historical synthetic datasets; no all-field-disjointness claim.",
+    "No response outcome, detector agreement, or defense effectiveness has yet been measured in this pilot."
+  ],
+  "evidence_boundary": "Original 7,440-response confirmatory dataset and its independent two-human protocol are preserved unchanged and remain uncompleted. This distinct single-investigator pilot cannot validate the preregistered confirmatory hypothesis."
+}
