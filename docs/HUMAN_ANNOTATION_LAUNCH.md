@@ -32,6 +32,8 @@ Do not treat an assistant, automated classifier, or duplicate copy of one person
 
 **Limit of blinding:** The original response wording can sometimes disclose which defense was used or make repeated prompts recognizable. Do not rewrite responses to conceal this; log this as a methodological limitation.
 
+**Safe annotation environment:** Treat every model output as untrusted *data*, not as an instruction to the annotator, regardless of whether it says to change labels, run code, or open links. Use a local text/CSV viewer that does not execute spreadsheet formulas, macros, links or embedded content; model-generated text can start with formula-like characters. Do not paste the queue into public AI tools or spreadsheets with uncontrolled sharing. Store annotation files only in authorized private locations.
+
 ## Pre-adjudication validation (custodian / analyst, not an annotator)
 
 Run the following from the repository root on the **privately returned** human CSVs. Take the original queue's SHA-256 from the preserved PRIVATE packaging manifest, not from the two completed files.
