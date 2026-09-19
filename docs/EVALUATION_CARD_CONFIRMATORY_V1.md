@@ -1,6 +1,6 @@
 # ShadowLeak Confirmatory Evaluation Card v1
 
-Status: **pre-results / evidence collection in progress**  
+Status: **pre-results / four model executions metadata-verified 2026-09-19; human labeling and analysis pending**  
 Study ID: `shadowleak-confirmatory-v1`  
 Protocol: `docs/CONFIRMATORY_PROTOCOL_V1.md`  
 Machine-readable plan: `studies/confirmatory_v1.json`  
@@ -10,6 +10,8 @@ This card is a governance-facing summary of the study design and evidence state.
 It must not be updated to imply a substantive model or defense finding until
 independent annotation, adjudication, and the preregistered analysis are
 complete.
+
+**Dated administrative evidence update (2026-09-19):** All four original model runs completed 1,860/1,860 cases with zero recorded generation failures; ZIP hashes, internal evidence files and case counts were verified **without inspecting model response text**. The originals still require durable private preservation before 2026-10-12, and pooled annotation IDs need repair prior to blinded labeling. These updated execution-status cells are **not** edits to the frozen research design, evidence class, primary hypothesis, or substantive findings. See the [artifact audit](CONFIRMATORY_ARTIFACT_AUDIT_2026-09-19.md) and [live publication status](PUBLICATION_STATUS.md).
 
 ## 1. Evaluation purpose
 
@@ -48,8 +50,8 @@ or suitable for every deployment context.
 | Machine-readable study plan | **Frozen** | `studies/confirmatory_v1.json` |
 | Reporting plan | **Frozen** | `studies/reporting_plan_v1.json` |
 | Manuscript structure / claim hierarchy | **Frozen** | `docs/MANUSCRIPT_V1.md` |
-| Primary-model execution | **Pending completion/verification** | primary `run_summary.json` + hashed run bundle |
-| Replication-model execution | **Pending** | one run bundle per registered model |
+| Primary-model execution | **Executed; structural and hash checks verified 2026-09-19** | [post-execution audit](CONFIRMATORY_ARTIFACT_AUDIT_2026-09-19.md), primary `run_summary.json` and hashed run bundle |
+| Replication-model execution | **Executed; structural and hash checks verified 2026-09-19** | [post-execution audit](CONFIRMATORY_ARTIFACT_AUDIT_2026-09-19.md), one run bundle per registered model |
 | Independent annotation A | **Pending** | completed blinded CSV |
 | Independent annotation B | **Pending** | completed blinded CSV |
 | Agreement report | **Pending** | `agreement.json` |
