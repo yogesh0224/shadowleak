@@ -29,6 +29,23 @@ Use **fresh generated responses** for this separate study, and use a separate `s
 
 The fixed settings above describe a proposed separate pilot to be accepted in the repository **before execution**. If execution resources require a smaller study, create and commit a dated protocol version v2 first, with a transparent deviation log; do not select sample size after inspecting outcomes.
 
+## 3a. Machine-readable plan and metadata-only preparation
+
+The separate [machine-readable pilot plan](../studies/solo_exploratory_v1.json) records the sample, one pinned model, the single-annotator evidence class and excluded claims. The [manifest validator/generator](../research/solo_plan.py) checks those assumptions and can create **new synthetic stimulus metadata** without fetching or inspecting any original confirmatory responses:
+
+```bash
+python -m research.solo_plan --plan studies/solo_exploratory_v1.json --validate-only
+```
+
+After the pilot protocol, code revision and secure output location are finalized, the project owner can generate its **distinct** manifest into a private directory:
+
+```bash
+python -m research.solo_plan --plan studies/solo_exploratory_v1.json \
+  --manifest-output /secure/shadowleak/solo_v1/manifest.jsonl
+```
+
+The generator refuses to overwrite an existing manifest and reports metadata counts and file hashes only; it does **not** execute a model or compute outcomes. The current frozen confirmatory `research.study_plan` runner expects at least two models and is **not** the execution entry point for this distinct one-model pilot. Model generation, single-investigator annotation, and analysis remain separate subsequent gates.
+
 ## 4. Independent-of-detector (but sole-investigator) labeling
 
 Generate a new randomized annotation queue and separate case key using `research.annotation_queue`. Keep the key, model/defense identity, model flags and **every detector prediction** inaccessible while manually labeling. The model response itself may reveal defense-specific refusal behavior, so the reviewer cannot be assumed fully blinded.
@@ -62,6 +79,7 @@ After label freeze:
 ## 7. Actual next steps and exit gates
 
 - [ ] Independently preserve all **original** four confirmatory ZIP archives and the existing pooled queue/crosswalk in durable private storage before GitHub's stated 2026-10-12 artifact expiry. A ChatGPT download is not durable storage; see [issue #5](https://github.com/yogesh0224/shadowleak/issues/5).
+- [x] Create a separate machine-readable exploratory plan plus a metadata-only plan/manifest validator with synthetic-fixture tests; no model execution or outcome inspection is performed by plan validation.
 - [ ] Freeze this exploratory plan and register the exact code SHA and distinct private output location **before generating any new model responses**.
 - [ ] Produce the fresh 10-record manifest; verify case/pair counts and record identity distinctions using metadata only. Build a new single-model empirical run, preserving failures and software/model provenance.
 - [ ] Generate a separate blank-label queue; manually label all successful cases without access to detector predictions or defense metadata. Freeze the single-investigator labels and log limitations.
