@@ -106,13 +106,23 @@ over explicit preference weights, not an estimate of social welfare or market
 cost. This preserves the distinction between empirical measurements and the
 institutional values used to act on those measurements.
 
+## Closest work on inference-time privacy and evaluation validity
+
+PrivacyLens evaluates contextual privacy norms and harmful information flows in model-agent communication, including leakage and action helpfulness (Shao et al., NeurIPS 2024; https://papers.nips.cc/paper_files/paper/2024/hash/a2a7e58309d5190082390ff10ff3b2b8-Abstract-Datasets_and_Benchmarks_Track.html). AgentDojo tests attack and defense behavior in interactive applications where untrusted tool outputs can redirect agents away from legitimate tasks (Debenedetti et al., NeurIPS 2024; https://arxiv.org/abs/2406.13352). Alizadeh et al. (2025; https://arxiv.org/abs/2506.01055) further investigate personal-data exfiltration in synthetic banking-agent tasks and report utility consequences alongside attack and defense outcomes. Thus, inference-time privacy evaluation, synthetic sensitive data, adversarial testing, and privacy–utility comparisons are **not** novel in isolation.
+
+ShadowLeak tests a different and narrower empirical object: benchmark-defined protected-attribute disclosure from synthetic information already provided in the same user message as a single-turn request, under a fixed regex-based input/output defense. The current experiment does not establish an independent high-priority confidentiality policy or lower-trust attacker-controlled tool surface; it must not be described as demonstrating unauthorized access, a tool-output prompt-injection breach, or interactive multi-turn attack success. Its `multi_turn_setup` templates are single-turn formulations.
+
+Evaluation validity is a plausible motivation rather than a previously demonstrated ShadowLeak result. StrongREJECT (Souly et al., NeurIPS 2024; https://papers.nips.cc/paper_files/paper/2024/hash/e2e06adf560b0706d3b1ddfca9f29756-Abstract-Datasets_and_Benchmarks_Track.html) finds consequential differences between common jailbreak-success metrics and human judgment in a related *but different* outcome domain. CASE-Bench (Sun et al., ICML 2025; https://proceedings.mlr.press/v267/sun25ab.html) likewise shows the importance of context when evaluating apparently safe or harmful requests. ShadowLeak can investigate whether analogous measurement sensitivity arises for its narrower disclosure outcome, without assuming it does, and without equating its four benign prompts with a comprehensive authorized-use evaluation.
+
 ## Research gap
 
-Existing work provides strong components of the problem: privacy extraction,
-adversarial prompt benchmarks, human-evaluation methodology, documentation
-frameworks, and multidimensional trustworthiness assessment. Less attention has
-been paid to connecting these components into one pre-specified pipeline for a
-privacy-defense claim in which:
+Prior research already combines several relevant components, including
+contextual privacy evaluation, adversarial benchmarks, human assessment, defense
+comparisons, and task utility. ShadowLeak's **candidate** contribution is a
+bounded, auditable measurement study: test how independently adjudicated and
+automated disclosure labels affect paired estimates of a *fixed* defense's
+effect, while retaining the frozen primary analysis and its limitations. Its
+existing protocol operationalizes this question using:
 
 1. the privacy threat model is explicit and uses only synthetic protected data;
 2. defended and undefended responses are matched within the same prompt and
@@ -125,10 +135,11 @@ privacy-defense claim in which:
 6. governance and economic interpretation remains explicitly downstream of the
    measured technical evidence.
 
-ShadowLeak is designed to evaluate that combined workflow. Its intended
-contribution is therefore not a universal privacy defense or a new legal
-standard, but a reproducible method for converting a red-team privacy finding
-into bounded, auditable evidence.
+Whether the proposed measurement comparison yields an empirically distinctive
+finding remains unresolved until independent annotation, registered analysis,
+and a more exhaustive comparison with disclosure-specific recent literature
+are complete. The new measurement question is not a retroactively registered
+primary confirmatory claim; see `docs/PUBLICATION_POSITIONING_V1.md`.
 
 ## Citation keys
 
