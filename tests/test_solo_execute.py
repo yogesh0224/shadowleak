@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import csv
 from pathlib import Path
 import tempfile
 import unittest
@@ -42,7 +43,8 @@ class SoloRunTests(unittest.TestCase):
             self.assertFalse(summary["defense_effect_estimated"])
             self.assertEqual(run.call_args.kwargs["model_revision"], "989aa7980e4cf806f80c7fef2b1adb7bc71aa306")
             self.assertEqual(len((output / "responses.jsonl").read_text().splitlines()), 620)
-            self.assertEqual(len((output / "annotation_queue.csv").read_text().splitlines()), 621)
+            with (output / "annotation_queue.csv").open(encoding="utf-8", newline="") as handle:
+                self.assertEqual(len(list(csv.DictReader(handle))), 620)
             self.assertEqual(len((output / "PRIVATE_annotation_key.jsonl").read_text().splitlines()), 620)
             self.assertEqual((output / "execution_commit.txt").read_text().strip(), COMMIT)
             self.assertEqual(len(summary["artifacts"]), 5)
