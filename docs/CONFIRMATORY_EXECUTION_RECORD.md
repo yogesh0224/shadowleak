@@ -92,3 +92,11 @@ The primary model remains the only primary confirmatory model. Replication jobs
 must not be promoted to separate primary discoveries. Their effect estimates,
 clustered intervals, failure rates, and contradictory/null findings remain
 reportable as replication evidence.
+
+## Post-execution verification (administrative update: 2026-09-19)
+
+The primary workflow [run 34701116937](https://github.com/yogesh0224/shadowleak/actions/runs/34701116937) and replication workflow [run 34703895719](https://github.com/yogesh0224/shadowleak/actions/runs/34703895719) are recorded by GitHub as completed successfully. A metadata-only audit retrieved all four ZIP archives, checked GitHub archive SHA-256 values and internal file hashes, verified the registered model/plan identities, and confirmed 1,860/1,860 generated responses and zero recorded generation failures **per model**. The replication workflow head differs from the frozen execution SHA, but the workflow checks out the frozen execution SHA and each replication archive records it in `execution_commit.txt`.
+
+This finding verifies execution and metadata integrity **only**; it does not establish human gold labels or leakage findings. The original archives still need durable private storage before GitHub's reported **2026-10-12** expiry. The four model-specific blinded queues reuse annotation IDs and must not be concatenated without a new unique pooled-ID namespace and a protected private key.
+
+See the [dated audit, artifact IDs and hashes](CONFIRMATORY_ARTIFACT_AUDIT_2026-09-19.md), [live publication status](PUBLICATION_STATUS.md) and [publication roadmap](RESEARCH_ROADMAP.md). This note does not amend the frozen model execution, protocol, or reporting plan.
