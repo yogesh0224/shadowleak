@@ -1,7 +1,7 @@
 # ShadowLeak publication status
 
 **Last verified update:** 2026-09-19  
-**Current phase:** Phase 2 — evidence preservation, annotation packaging and independent human labeling preparation.  
+**Current phase:** Phase 2 — durable evidence preservation, annotator handoff and independent human labeling preparation.  
 **Overall status:** **Pre-results. Model execution and metadata-only integrity checks are complete; human gold labels and statistical findings are not.**  
 **Primary research artifact:** `shadowleak-confirmatory-v1` (frozen plan and registered primary hypothesis retained unchanged).
 
@@ -16,7 +16,7 @@
 | Primary model run | **Executed and structurally verified** | 1,860 / 1,860; 0 recorded generation failures; [audit](CONFIRMATORY_ARTIFACT_AUDIT_2026-09-19.md). |
 | Three replication model runs | **Executed and structurally verified** | Each 1,860 / 1,860; 0 recorded generation failures; [audit](CONFIRMATORY_ARTIFACT_AUDIT_2026-09-19.md). |
 | Original ZIP evidence in durable private storage | **Not yet verified** | GitHub artifacts expire 2026-10-12; [issue #5](https://github.com/yogesh0224/shadowleak/issues/5). Downloads to a chat workspace do not count as permanent storage. |
-| One combined blinded annotation queue | **Blocked by cross-model ID collisions** | Original per-model queues are valid, but all four reuse the same 1,860 anonymous IDs; [issue #6](https://github.com/yogesh0224/shadowleak/issues/6). |
+| One combined blinded annotation queue | **Generated and structurally validated in a temporary workspace; not yet privately archived or handed to annotators** | 7,440 distinct new opaque IDs and a separate protected crosswalk. [Handoff guide](ANNOTATION_HANDOFF.md); [issue #6](https://github.com/yogesh0224/shadowleak/issues/6). |
 | Two independent human annotation passes | **Pending** | [Issue #7](https://github.com/yogesh0224/shadowleak/issues/7). |
 | Agreement report, adjudication and frozen gold labels | **Pending** | [Issue #7](https://github.com/yogesh0224/shadowleak/issues/7). |
 | Statistical code consistency and analysis lock | **Pending review** | [Issue #8](https://github.com/yogesh0224/shadowleak/issues/8); do not inspect protected outcomes to make research-design changes. |
@@ -36,7 +36,7 @@
 ## Current critical path
 
 1. **Preserve originals, P0:** archive the four unchanged ZIP files in private durable storage and verify hashes **before 2026-10-12** ([#5](https://github.com/yogesh0224/shadowleak/issues/5)).
-2. **Prepare the annotation handoff, P0:** create 7,440 distinct pooled anonymous IDs and a separately protected reversible key, validate complete coverage, and preserve blinding ([#6](https://github.com/yogesh0224/shadowleak/issues/6)).
+2. **Prepare the annotation handoff, P0:** collision-free packaging and structural validation are complete in a temporary workspace; preserve the exact blinded queue/crosswalk privately and arrange separate human-annotator handoff ([guide](ANNOTATION_HANDOFF.md); [#6](https://github.com/yogesh0224/shadowleak/issues/6)).
 3. **Obtain independent human labels, P0:** two independent annotation passes (14,880 individual labeling decisions if all 7,440 rows receive two labels), agreement reporting and disagreement adjudication; freeze gold labels before unblinding ([#7](https://github.com/yogesh0224/shadowleak/issues/7)).
 4. **Audit code and execute analysis, P1:** independently check pair-exclusion and clustered inference against the frozen plan, then run the registered and appropriately labeled additional analyses ([#8](https://github.com/yogesh0224/shadowleak/issues/8), [#9](https://github.com/yogesh0224/shadowleak/issues/9)).
 5. **Prepare a bounded paper, P1:** complete the related-work review, report results and limitations, obtain critical review, package evidence with access controls and select a venue ([#10](https://github.com/yogesh0224/shadowleak/issues/10)).
@@ -58,4 +58,5 @@ Update this page only when the referenced issue is verified against an actual ar
 |---|---|
 | 2026-09-12 | Registered confirmatory primary and replication workflows completed; see linked workflow run IDs in the [audit](CONFIRMATORY_ARTIFACT_AUDIT_2026-09-19.md). |
 | 2026-09-19 | Four original ZIPs retrieved and structurally/hash audited without response-text inspection; cross-model annotation-ID collision identified. |
+| 2026-09-19 | A pooled 7,440-row annotation queue with 7,440 distinct opaque IDs and a separate private crosswalk was generated and structurally checked in a temporary workspace. The [packaging code and handoff guide](ANNOTATION_HANDOFF.md) were prepared; durable private preservation and human annotation remain pending. |
 | 2026-09-19 | Publication positioning proposed in [draft PR #4](https://github.com/yogesh0224/shadowleak/pull/4); six scoped GitHub issues (#5–#10) opened and this progress tracker added. |
