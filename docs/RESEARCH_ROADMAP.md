@@ -1,6 +1,6 @@
 # ShadowLeak — Publication Roadmap
 
-**Status date:** 2026-09-19 · **Current work:** preserve evidence and prepare independent human annotation.  
+**Status date:** 2026-09-19 · **Current work:** preserve original evidence and define a distinct single-investigator exploratory pilot without rewriting the frozen confirmatory study.  
 **Source of truth for live progress:** [Publication status](PUBLICATION_STATUS.md).  
 **Evidence for completed executions:** [2026-09-19 artifact audit](CONFIRMATORY_ARTIFACT_AUDIT_2026-09-19.md).  
 **Tracking:** [GitHub issues](https://github.com/yogesh0224/shadowleak/issues).  
@@ -15,10 +15,26 @@ This roadmap tracks **implemented infrastructure**, **executed model runs**, **v
 | 0. Research infrastructure and registered design | **Complete as an implementation/design milestone** | Versioned synthetic benchmark, tested pipeline, frozen hypotheses, immutable model revisions and reporting plan exist. |
 | 1. Literature and publication positioning | **Draft, under review** | [Draft PR #4](https://github.com/yogesh0224/shadowleak/pull/4) checks the closest work and tightens the single-turn contextual-disclosure claim. Novelty is not established merely by this draft. |
 | 2. Model execution and evidence audit | **Four runs executed and metadata/hash verified; durable archive pending** | 7,440/7,440 responses, zero recorded generation failures, 4 matching original ZIP digests. Complete [#5](https://github.com/yogesh0224/shadowleak/issues/5). |
-| 3. Annotation preparation, double labeling, adjudication | **Packaging and reviewer quality gate implemented; durable handoff and human labels pending** | Preserve evidence and distribute two private copies [#5](https://github.com/yogesh0224/shadowleak/issues/5), [#6](https://github.com/yogesh0224/shadowleak/issues/6); follow [human annotation launch](HUMAN_ANNOTATION_LAUNCH.md), then obtain genuine independent labels and adjudicate [#7](https://github.com/yogesh0224/shadowleak/issues/7). |
-| 4. Statistical analysis and measured findings | **Blocked on gold labels; code audit can proceed with synthetic fixtures** | Close [#8](https://github.com/yogesh0224/shadowleak/issues/8) and [#9](https://github.com/yogesh0224/shadowleak/issues/9). |
+| 3. **Original study** annotation preparation, double labeling, adjudication | **Packaging and reviewer quality gate implemented; durable handoff and independent human labels pending** | Preserve evidence [#5](https://github.com/yogesh0224/shadowleak/issues/5), [#6](https://github.com/yogesh0224/shadowleak/issues/6); original two-human protocol stays open [#7](https://github.com/yogesh0224/shadowleak/issues/7). The separate solo pilot is **not** a replacement. |
+| 4. **Original study** statistical analysis and measured findings | **Blocked on original human gold labels; code audit can proceed with synthetic fixtures** | Preserve registered analysis gates [#8](https://github.com/yogesh0224/shadowleak/issues/8), [#9](https://github.com/yogesh0224/shadowleak/issues/9). Separate single-annotator analyses have an exploratory evidence class. |
 | 5. Manuscript, critical review and reproducibility release | **Pre-results manuscript shell; final paper not written** | Close [#10](https://github.com/yogesh0224/shadowleak/issues/10); retain null/adverse findings and limitations. |
 | 6. Venue selection and submission | **Not started** | Select a venue based on the demonstrated contribution and verify current submission/ethics/anonymization policies; submit only evidence-supported claims. |
+
+## Parallel solo-investigator track (new; prospective exploratory study)
+
+**The owner is working entirely alone.** The original frozen two-human confirmatory study remains incomplete even though its four model-generation jobs passed. Do not present sole-investigator labels on any subset of the original 7,440 responses as the original pre-registered primary analysis.
+
+The proposed separate study is documented in [SOLO_EXPLORATORY_PROTOCOL_V1.md](SOLO_EXPLORATORY_PROTOCOL_V1.md), with implementation and evidence gates tracked in [issue #13](https://github.com/yogesh0224/shadowleak/issues/13).
+
+- [x] Define the **bounded claim register** and distinct exploratory research question. It concerns correspondence between fixed automated detectors and **one researcher's manual judgments**; it does **not** assert human-adjudicated detector accuracy or robust defense efficacy.
+- [x] Specify a *new-data* pilot: seed 20260919, 10 synthetic records, one pinned Qwen2.5-1.5B model, 27 adversarial and four benign prompts, two fixed conditions = **620 planned cases (540 attack / 80 benign)**. Ten record clusters give limited precision and do not support confirmatory claims.
+- [ ] Freeze pilot code/revision and output-location manifest before generating or reading **new** model responses. Keep original 7,440 responses and keys separate.
+- [ ] Verify the **fresh** synthetic benchmark manifest and create an auditable new single-model run; do not sample visually interesting outputs or silently replace failures.
+- [ ] Manually label all successful **new** responses *without detector predictions or the private condition key*; record single-human identity and limitations, preserve rationales and freeze file hash before unblinding. Do not fabricate a second reviewer or use the original `research.adjudication` gate to imply independent adjudication.
+- [ ] Produce descriptive 2×2 detector-vs-single-annotator agreement/error tables, complete-pair leakage summaries, limited benign task outcomes, and all negative/null findings. Describe metrics **relative to one annotator**, not validated human ground truth.
+- [ ] Reconsider publication venue and paper claim *after* these results and a comprehensive literature comparison; a methodology/feasibility report is possible but no peer-reviewed acceptance or novel contribution is guaranteed.
+
+**Parallel critical preservation gate:** [Issue #5](https://github.com/yogesh0224/shadowleak/issues/5) remains urgent: archive unchanged originals privately before their reported 2026-10-12 GitHub Actions expiry. Any private key / sole-investigator labels should not be committed to public GitHub. Consult the [live status dashboard](PUBLICATION_STATUS.md) to see both tracks.
 
 ## Stage 0 — Completed infrastructure (historical development)
 
