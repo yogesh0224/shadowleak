@@ -7,26 +7,57 @@ from collections import defaultdict
 from typing import Any
 
 
-def _paired_record_effect(rows: list[dict[str, Any]], *, outcome_field: str, cluster_field: str) -> dict[str, float]:
-    """Compute condition rates after averaging within record clusters."""
-    by_cluster: dict[str, dict[str, list[int]]] = defaultdict(lambda: defaultdict(list))
+def _complete_pair_rows(rows: list[dict[str, Any]], *, cluster_field: str) -> list[dict[str, Any]]:
+    """Retain only complete, unique two-condition pairs within one record.
+
+    This enforces the frozen protocol's incomplete-pair exclusion *before*
+    calculating condition rates or sampling record clusters. An incomplete
+    pair is excluded from both arms rather than contributing a single arm.
+    """
+    pairs: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    pair_cluster: dict[str, str] = {}
     for row in rows:
+        if cluster_field not in row or not str(row[cluster_field]):
+            raise ValueError(f"Missing cluster field: {cluster_field}")
+        pair_id = str(row.get("pair_id", ""))
+        if not pair_id:
+            raise ValueError("Missing pair_id")
         cluster = str(row[cluster_field])
+        if pair_id in pair_cluster and pair_cluster[pair_id] != cluster:
+            raise ValueError(f"Pair {pair_id} belongs to multiple record clusters")
+        pair_cluster[pair_id] = cluster
         condition = str(row["defense_condition"])
         if condition not in {"none", "guardshield-v1"}:
             raise ValueError(f"Unexpected defense condition: {condition}")
+        if condition in pairs[pair_id]:
+            raise ValueError(f"Duplicate {condition} observation for pair {pair_id}")
+        pairs[pair_id][condition] = row
+
+    return [
+        condition_row
+        for pair in pairs.values()
+        if set(pair) == {"none", "guardshield-v1"}
+        for condition_row in (pair["none"], pair["guardshield-v1"])
+    ]
+
+
+def _paired_record_effect(rows: list[dict[str, Any]], *, outcome_field: str, cluster_field: str) -> dict[str, float]:
+    """Compute equal-record-weighted condition rates on identical complete pairs."""
+    by_cluster: dict[str, dict[str, list[int]]] = defaultdict(lambda: defaultdict(list))
+    for row in _complete_pair_rows(rows, cluster_field=cluster_field):
+        cluster = str(row[cluster_field])
+        condition = str(row["defense_condition"])
         by_cluster[cluster][condition].append(int(row[outcome_field]))
 
-    complete = {cluster: values for cluster, values in by_cluster.items() if values["none"] and values["guardshield-v1"]}
-    if not complete:
-        raise ValueError("No complete clusters available for paired inference")
+    if not by_cluster:
+        raise ValueError("No complete pairs available for paired inference")
 
-    none_cluster_rates = [sum(values["none"]) / len(values["none"]) for values in complete.values()]
-    guard_cluster_rates = [sum(values["guardshield-v1"]) / len(values["guardshield-v1"]) for values in complete.values()]
+    none_cluster_rates = [sum(values["none"]) / len(values["none"]) for values in by_cluster.values()]
+    guard_cluster_rates = [sum(values["guardshield-v1"]) / len(values["guardshield-v1"]) for values in by_cluster.values()]
     none_rate = sum(none_cluster_rates) / len(none_cluster_rates)
     guard_rate = sum(guard_cluster_rates) / len(guard_cluster_rates)
     return {
-        "cluster_count": float(len(complete)),
+        "cluster_count": float(len(by_cluster)),
         "no_defense_rate": none_rate,
         "guardshield_rate": guard_rate,
         "guardshield_minus_no_defense": guard_rate - none_rate,
@@ -55,9 +86,7 @@ def cluster_bootstrap_paired_difference(
         raise ValueError("confidence must be between 0 and 1")
 
     by_cluster: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for row in rows:
-        if cluster_field not in row:
-            raise ValueError(f"Missing cluster field: {cluster_field}")
+    for row in _complete_pair_rows(rows, cluster_field=cluster_field):
         by_cluster[str(row[cluster_field])].append(row)
 
     cluster_ids = sorted(by_cluster)
@@ -75,6 +104,7 @@ def cluster_bootstrap_paired_difference(
             for row in by_cluster[selected]:
                 copied = dict(row)
                 copied[cluster_field] = synthetic_cluster
+                copied["pair_id"] = f"{synthetic_cluster}:{row['pair_id']}"
                 sampled_rows.append(copied)
         effect = _paired_record_effect(sampled_rows, outcome_field=outcome_field, cluster_field=cluster_field)
         draws.append(effect["no_defense_minus_guardshield"])
